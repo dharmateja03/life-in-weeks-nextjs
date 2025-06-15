@@ -10,6 +10,7 @@ export interface GridBox {
   backgroundClass: string
   age?: number
   year?: number
+  eventType?: 'personal' | 'world' | 'president'  // Type of event for styling
 }
 
 export interface RowBreakCalculation {
@@ -53,23 +54,18 @@ export const GRID_CONSTANTS = {
 export function getResponsiveConstants() {
   if (typeof window === 'undefined') {
     // Server-side rendering fallback
-    console.log('📱 BREAKPOINT: Server-side (using desktop defaults)')
     return GRID_CONSTANTS.desktop
   }
   
   const width = window.innerWidth
   
   if (width < 480) {
-    console.log(`📱 BREAKPOINT: Extra Small (${width}px) - ${GRID_CONSTANTS.extraSmall.containerWidth}px container`)
     return GRID_CONSTANTS.extraSmall
   } else if (width < 768) {
-    console.log(`📱 BREAKPOINT: Mobile (${width}px) - ${GRID_CONSTANTS.mobile.containerWidth}px container`)
     return GRID_CONSTANTS.mobile
   } else if (width < 1024) {
-    console.log(`📱 BREAKPOINT: Tablet (${width}px) - ${GRID_CONSTANTS.tablet.containerWidth}px container`)
     return GRID_CONSTANTS.tablet
   } else {
-    console.log(`📱 BREAKPOINT: Desktop (${width}px) - ${GRID_CONSTANTS.desktop.containerWidth}px container`)
     return GRID_CONSTANTS.desktop
   }
 }
@@ -251,28 +247,3 @@ export function createBirthdayTooltip(date: string, age: number): string {
   return `${formattedDate} – Turned ${age} ${yearText} old`
 }
 
-/**
- * Debug helper to log row breaking calculations
- */
-export function debugRowBreaking(boxes: GridBox[]): void {
-  console.log('Row Breaking Debug:')
-  let currentRowBoxes = 0
-  let rowNumber = 1
-  
-  for (const box of boxes) {
-    const breakCheck = shouldBreakRow(currentRowBoxes, box.label)
-    
-    if (breakCheck.shouldBreak && currentRowBoxes > 0) {
-      console.log(`Row ${rowNumber} complete with ${currentRowBoxes} boxes`)
-      rowNumber++
-      currentRowBoxes = 0
-    }
-    
-    const boxWidth = box.type === 'week' ? 1 : calculateBoxWidth(box.label)
-    currentRowBoxes += boxWidth
-    
-    console.log(`  ${box.type}: "${box.label}" (width: ${boxWidth}, total: ${currentRowBoxes})`)
-  }
-  
-  console.log(`Final row ${rowNumber} with ${currentRowBoxes} boxes`)
-}

@@ -1,6 +1,14 @@
-/* Life in Weeks Styling - Exact replica of Gina's main.scss */
-/* Original source: /temp/life-in-weeks/assets/sass/main.scss */
+/* Life in Weeks Styling */
 
+/* Global reset for full-screen layout */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* CSS Variables for theming */
 :root {
   --main-bg-color: #fff7e9;
   --text-color: #3f5c72;
@@ -9,6 +17,8 @@
   --highlight-color: #f05d2b;
   --future-border: #dee2e6;
   --future-bg-color: #eee;
+  --week-cell-text: #3f5c72;
+  --week-cell-border: #ccc;
   --body-font-size-desktop: 16px;
   --body-font-size-mobile: 12px;
   --header-font-size-desktop: 72px;
@@ -16,6 +26,7 @@
   --font-family: 'Red Hat Display', system-ui, -apple-system, sans-serif;
 }
 
+/* Container styles */
 .life-in-weeks-container,
 .life-in-weeks-container *,
 .life-in-weeks-container :after,
@@ -48,8 +59,10 @@
   color: var(--text-color);
   background-color: var(--main-bg-color);
   min-height: 100vh;
+  width: 100%;
   margin: 0;
-  padding: 0;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 @media only screen and (max-width: 768px) {
@@ -58,6 +71,7 @@
   }
 }
 
+/* Typography */
 .life-in-weeks-container h1 {
   font-family: var(--font-family);
   font-weight: 800;
@@ -97,13 +111,13 @@
   border-bottom: solid var(--highlight-color) 1px;
 }
 
+/* Main content area */
 .life-in-weeks {
   border-radius: 5px;
   margin: 0 20% 2rem 20%;
   width: auto;
 }
 
-/* Tablet breakpoint - reduce margins by 50% */
 @media only screen and (max-width: 1024px) and (min-width: 769px) {
   .life-in-weeks {
     margin: 0 10% 2rem 10%;
@@ -116,84 +130,7 @@
   }
 }
 
-/* Header is now inside life-in-weeks container for proper alignment */
-
-.life-in-weeks .future-date {
-  background-color: var(--future-bg-color) !important;
-  border-color: var(--future-border) !important;
-}
-
-.life-in-weeks .week,
-.life-in-weeks .birthday {
-  height: 2em;
-  max-height: 2em;
-  padding: 2px 5px;
-  margin: 2px 1px;
-  border: 1px solid #ccc;
-  background-color: white;
-  font-size: inherit;
-  cursor: pointer;
-  display: inline-block;
-  vertical-align: top;
-}
-
-.life-in-weeks .btn {
-  --bs-btn-color: var(--text-color);
-  --bs-btn-font-size: var(--body-font-size-desktop);
-  border: 1px solid #ccc;
-  background-color: white;
-  color: var(--text-color);
-  padding: 2px 5px;
-  margin: 2px 1px;
-  text-align: center;
-  vertical-align: top;
-  cursor: pointer;
-  border-radius: 3px;
-  font-size: inherit;
-  line-height: 1.2;
-}
-
-@media only screen and (max-width: 768px) {
-  .life-in-weeks .btn {
-    --bs-btn-font-size: var(--body-font-size-mobile);
-  }
-}
-
-.life-in-weeks .btn:hover {
-  opacity: 0.8;
-}
-
-.life-in-weeks blockquote {
-  margin-top: 50px;
-}
-
-.life-in-weeks li {
-  list-style-type: none;
-}
-
-.life-in-weeks li a {
-  color: var(--link-color);
-  text-decoration: none;
-}
-
-.life-in-weeks li a:hover {
-  color: var(--highlight-color);
-  text-decoration: none;
-  border: none;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Header styling moved to be inside life-in-weeks container */
+/* Header navigation */
 .life-in-weeks .sticky-top {
   position: sticky;
   top: 0;
@@ -203,7 +140,7 @@
 }
 
 .life-in-weeks .navbar {
-  margin-bottom: 0.5rem;  /* Reduced from 1em */
+  margin-bottom: 0.5rem;
   display: none;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
@@ -223,7 +160,7 @@
   margin: 0;
   list-style: none;
   border-bottom: solid var(--highlight-color) 1px;
-  padding-bottom: 0.25rem;  /* Reduced from 0.5rem */
+  padding-bottom: 0.25rem;
 }
 
 .life-in-weeks .nav-item {
@@ -232,8 +169,8 @@
 
 .life-in-weeks .nav-link {
   display: inline-block;
-  padding: 0.1rem 0.5rem;  /* Reduced vertical padding from 0.25rem */
-  color: var(--text-color);  /* Default to page text color instead of orange */
+  padding: 0.1rem 0.5rem;
+  color: var(--text-color);
   text-decoration: none;
   font-size: var(--body-font-size-desktop);
   transition: color 0.15s ease-in-out;
@@ -243,90 +180,41 @@
 
 @media only screen and (max-width: 768px) {
   .life-in-weeks .nav-link {
-    padding: 0.1rem 0.35rem;  /* Reduced vertical padding */
+    padding: 0.1rem 0.35rem;
     font-size: var(--body-font-size-mobile);
   }
 }
 
 .life-in-weeks .nav-link:hover,
 .life-in-weeks .nav-link:focus {
-  color: var(--highlight-color);  /* Orange on hover */
+  color: var(--highlight-color);
   text-decoration: none;
 }
 
 .life-in-weeks .nav-link.active {
-  color: var(--highlight-color);  /* Orange for active decade */
+  color: var(--highlight-color);
   font-weight: bold;
 }
 
-.custom-tooltip {
-  --bs-tooltip-bg: var(--highlight-color);
-  --bs-tooltip-color: white;
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Color classes for locations (border colors) - Exact from Gina's colors.yml */
-.brooklyn {
-  border-color: #8eb2d6 !important;
-}
-
-.san-diego {
-  border-color: #FCC737 !important;
-}
-
-.north-carolina {
-  border-color: #118B50 !important;
-}
-
-.poughkeepsie {
-  border-color: #469046 !important;
-}
-
-/* Color classes for activities (background colors) - Exact from Gina's colors.yml */
-.i-was-tiny {
-  background-color: white !important;
-}
-
-.kindergartner {
-  background-color: #FFF6DA !important;  /* Light yellow */
-}
-
-.student {
-  background-color: #E8F9FF !important;  /* Light blue */
-}
-
-.high-school-student {
-  background-color: #C9E9D2 !important;  /* Light green */
-}
-
-.college-student {
-  background-color: #FFE3E3 !important;  /* Light pink */
-}
-
-.working {
-  background-color: #F8E7F6 !important;  /* Light purple */
-}
-
-.freelancing {
-  background-color: #d6d6f0 !important;  /* Light lavender */
-}
-
-.funemployed {
-  background-color: white !important;
-}
-
-/* Grid layout matching Gina's compact design */
+/* Grid layout */
 .weeks-grid-container {
   width: 100%;
   margin: 1rem 0 0 0;
   padding: 0 0 2rem 0;
 }
 
-.decade-section {
-  margin-bottom: 0;
-  width: 100%;
-}
-
-/* Responsive flex-grow approach for proper width distribution */
 .row-wrapper {
   display: flex;
   align-items: stretch;
@@ -335,6 +223,7 @@
   gap: 1px;
 }
 
+/* Week cells */
 .life-in-weeks .week,
 .life-in-weeks .birthday,
 .life-in-weeks .btn {
@@ -343,8 +232,9 @@
   min-height: 32px !important;
   padding: 0 4px !important;
   margin: 0 !important;
-  border: 1px solid #ccc;
+  border: 1px solid var(--week-cell-border, #ccc);
   background-color: white;
+  color: var(--week-cell-text, #333);
   font-size: var(--body-font-size-desktop);
   cursor: pointer;
   display: flex !important;
@@ -360,36 +250,36 @@
   font-weight: normal !important;
 }
 
-/* Week boxes flex to fill available space equally */
 .life-in-weeks .week {
   flex: 1 1 0;
   padding: 2px 2px;
   font-size: calc(var(--body-font-size-desktop) * 0.8);
 }
 
-/* Event and birthday boxes use content-based width */
-.life-in-weeks .birthday {
-  flex: 0 0 auto;
-  padding: 2px 4px;
-  min-width: fit-content;
-}
-
+.life-in-weeks .birthday,
 .life-in-weeks .event {
   flex: 0 0 auto;
   padding: 2px 4px;
   min-width: fit-content;
 }
 
-/* Responsive breakpoints for optimal box distribution */
+.life-in-weeks .btn:hover {
+  opacity: 0.8;
+}
 
-/* Tablet breakpoint */
+.life-in-weeks .future-date {
+  background-color: var(--future-bg-color) !important;
+  border-color: var(--future-border) !important;
+  color: var(--text-color) !important;
+}
+
+/* Responsive breakpoints */
 @media only screen and (max-width: 1024px) and (min-width: 769px) {
   .life-in-weeks .week {
     font-size: calc(var(--body-font-size-desktop) * 0.9);
   }
 }
 
-/* Mobile breakpoint */
 @media only screen and (max-width: 768px) {
   .life-in-weeks .week,
   .life-in-weeks .birthday,
@@ -412,7 +302,6 @@
   }
 }
 
-/* Extra small mobile */
 @media only screen and (max-width: 480px) {
   .life-in-weeks .week {
     font-size: calc(var(--body-font-size-mobile) * 0.8);
@@ -423,4 +312,3 @@
     font-size: calc(var(--body-font-size-mobile) * 0.9);
   }
 }
-

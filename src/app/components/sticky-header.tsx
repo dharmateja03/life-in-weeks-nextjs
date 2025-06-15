@@ -74,7 +74,7 @@ export function StickyHeader({ title }: StickyHeaderProps) {
       }}
     >
       <h1 className={isScrolled ? 'tiny' : ''}>
-        <a href="/weeks">{title}</a>
+        {title}
       </h1>
       
       <nav 
