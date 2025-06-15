@@ -24,19 +24,19 @@ export const lifeEvents: EventsData = {
   ],
   "1993-09-01": [
     {
-      headline: "📓 Elementary school",
+      headline: "📓 Elementary School",
       milestone: true
     }
   ],
   "1998-09-01": [
     {
-      headline: "🏫 Middle school",
+      headline: "🏫 Middle School",
       milestone: true
     }
   ],
   "2002-09-01": [
     {
-      headline: "🏠 Boarding school",
+      headline: "🏠 Boarding School",
       milestone: true
     }
   ],
@@ -48,15 +48,28 @@ export const lifeEvents: EventsData = {
   ],
   "PLACEHOLDER_MET_WIFE_DATE  ": [
     {
-      headline: "💕 Met my wife",
+      headline: "💕 Met My Wife",
       based: "China",
       doing: "College student",
       association: "University"
     }
   ],
+  "2007-10-07": [
+    {
+      headline: "🎻 Performing in Leipzig",
+      description: "Nanjing University Orchestra visited Leipzig and other cities. Fun trip with schoolmates and musicians."
+    }
+  ],
+  "2008-05-01": [
+    {
+      headline: "✍️ First Paper, Acoustics",
+      description: "Laser-generated narrow-band ultrasonic wave for NDT applications - https://pubs.aip.org/asa/jasa/article/123/5_Supplement/3287/634811/Laser-generated-narrow-band-ultrasonic-wave-for"
+    }
+  ],
   "2008-08-01": [
     {
-      headline: "🇭🇰 Exchange Study in Hong Kong"
+      headline: "🇭🇰 Exchange Study in Hong Kong",
+      description: "CityU in Hong Kong, an eye-opening experience compared to my school (Nanjing University)."
     }
   ],
   "PLACEHOLDER_MARRIAGE_DATE": [
@@ -69,8 +82,14 @@ export const lifeEvents: EventsData = {
   ],
   "2009-06-20": [
     {
-      headline: "✈️ US grad school",
+      headline: "✈️ US Grad School",
       milestone: true
+    }
+  ],
+  "2010-06-21": [
+    {
+      headline: "✍️ First Paper, Photonics",
+      description: "Published at Nonlinear Photonics conference - https://opg.optica.org/abstract.cfm?uri=NP-2010-NTuB3"
     }
   ],
   "2012-06-01": [
@@ -83,13 +102,21 @@ export const lifeEvents: EventsData = {
   ],
   "2012-06-15": [
     {
-      headline: "🚗 Roadtrip across US"
+      headline: "🚗 Roadtrip Across US",
+      description: "From LA to Delaware. 14 days, lots of adventures, and sleeping in odd places."
     }
   ],
   "2012-12-01": [
     {
       headline: "🚀 Hardware Startup",
+      description: "We built a new type of chip that moves light around - Silicon Photonics. https://www.nokia.com/newsroom/nokia-completes-acquisition-of-elenion-technologies/",
       milestone: true
+    }
+  ],
+  "2014-05-01": [
+    {
+      headline: "✍️ First Paper, Electronics",
+      description: "Electronics Letters - https://ietresearch.onlinelibrary.wiley.com/doi/abs/10.1049/el.2014.0367"
     }
   ],
   "2014-06-01": [
@@ -113,6 +140,7 @@ export const lifeEvents: EventsData = {
   "2016-06-17": [
     {
       headline: "🐕 Got Mango",
+      description: "Boston Terrier puppy - https://www.instagram.com/mango.bostonterrier/",
       based: "NYC",
       doing: "Entrepreneur",
       association: "Startup"
@@ -125,7 +153,8 @@ export const lifeEvents: EventsData = {
   ],
   "2017-06-01": [
     {
-      headline: "💀 Quit Hardware"
+      headline: "💀 Quit Hardware",
+      description: "Difficult transition, went through lots of exploration, and landed on AI/ML."
     }
   ],
   "2018-01-01": [
@@ -136,12 +165,19 @@ export const lifeEvents: EventsData = {
   ],
   "2018-05-01": [
     {
-      headline: "👩 Mom visited US"
+      headline: "👩 Mom Visited US"
+    }
+  ],
+  "2018-09-07": [
+    {
+      headline: "✍️ First Paper, ML",
+      description: "Machine learning research - https://arxiv.org/abs/1809.02687"
     }
   ],
   "2020-02-01": [
     {
-      headline: "📸 Started Photography"
+      headline: "📸 Started Photography",
+      description: "Photography portfolio - https://www.instagram.com/magicfeature/"
     }
   ],
   "2020-02-15": [
@@ -157,12 +193,14 @@ export const lifeEvents: EventsData = {
   ],
   "2021-06-01": [
     {
-      headline: "🏞️ Zion, Arches, Bryce"
+      headline: "🏞️ Zion, Arches, Bryce",
+      description: "Utah national parks hiking adventure - https://www.dingran.me/blog/utah-trip"
     }
   ],
   "2021-10-01": [
     {
-      headline: "🇮🇹 Italy"
+      headline: "🇮🇹 Italy",
+      description: "Italian adventure through multiple cities - https://www.dingran.me/blog/italy-trip"
     }
   ],
   "2022-04-01": [
@@ -185,6 +223,12 @@ export const lifeEvents: EventsData = {
       headline: "🌲 Seattle"
     }
   ],
+  "2022-10-17": [
+    {
+      headline: "🤔 Right Elbow Pain",
+      description: "Seemingly minor thing that changed my outlook on life"
+    }
+  ],
   "2022-11-01": [
     {
       headline: "🇯🇵 Japan"
@@ -202,7 +246,7 @@ export const lifeEvents: EventsData = {
   ],
   "2023-11-10": [
     {
-      headline: "🎻 Started cello lessons"
+      headline: "🎻 Started Cello Lessons"
     }
   ],
   "2024-01-01": [
@@ -213,6 +257,7 @@ export const lifeEvents: EventsData = {
   "2024-02-15": [
     {
       headline: "🐧 Antarctica",
+      description: "Antarctic expedition photobook - https://www.blurb.com/b/12032020-antarctica",
       based: "NYC",
       doing: "Working",
       association: "Instagram"

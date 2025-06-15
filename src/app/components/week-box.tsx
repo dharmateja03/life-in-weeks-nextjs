@@ -5,6 +5,7 @@
 
 import React from 'react'
 import { GridBox } from '../utils/grid-layout'
+import { CustomTooltip } from './custom-tooltip'
 
 interface WeekBoxProps {
   box: GridBox
@@ -25,18 +26,34 @@ export function WeekBox({ box, className = '', style = {} }: WeekBoxProps) {
   
   const finalClassName = `${fullClassName} ${typeSpecificClasses[box.type]}`.trim()
   
-  return (
+  // Determine if this box has detailed content worth showing in rich tooltip
+  // Rich tooltips for events with descriptions (papers, detailed events)
+  const hasDetails = box.type === 'event' && 
+    box.tooltip.includes('–') && 
+    (box.tooltip.includes('http') || box.tooltip.length > 50)
+  
+  const buttonElement = (
     <button
       type="button"
       className={finalClassName}
       data-date={box.date}
-      data-bs-toggle="tooltip"
-      data-bs-placement="bottom"
-      data-bs-custom-class="custom-tooltip"
-      data-bs-title={box.tooltip}
       style={style}
     >
       {box.label}
     </button>
   )
+
+  // Use rich tooltip for detailed events, simple title for others
+  if (hasDetails) {
+    return (
+      <CustomTooltip content={box.tooltip} hasDetails={true}>
+        {buttonElement}
+      </CustomTooltip>
+    )
+  } else {
+    // Simple native tooltip for basic events/dates
+    return React.cloneElement(buttonElement, { 
+      title: box.type === 'week' ? '' : box.tooltip 
+    })
+  }
 }

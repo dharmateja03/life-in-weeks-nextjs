@@ -10,11 +10,11 @@ html, body {
 
 /* CSS Variables for theming */
 :root {
-  --main-bg-color: #fff7e9;
+  --main-bg-color: #f0f8ff;
   --text-color: #3f5c72;
   --header-text-color: var(--text-color);
   --link-color: var(--text-color);
-  --highlight-color: #f05d2b;
+  --highlight-color: #4285f4;
   --future-border: #dee2e6;
   --future-bg-color: #eee;
   --week-cell-text: #3f5c72;
@@ -248,6 +248,7 @@ html, body {
   white-space: nowrap !important;
   vertical-align: top !important;
   font-weight: normal !important;
+  position: relative;
 }
 
 .life-in-weeks .week {

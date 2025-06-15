@@ -1,37 +1,39 @@
 # Life in Weeks - Next.js
 
-A visual representation of life where each week you've been alive is displayed as a little box. This project is a Next.js adaptation inspired by the original concept from Wait But Why and Gina Trapani's Hugo implementation.
+Your entire life, visualized as tiny boxes. Each week you've been alive gets its own little square. Sounds morbid? It's actually pretty motivating! 📦✨
 
-## 🎯 About
+This is a Next.js version inspired by Tim Urban's mind-bending Wait But Why post and Gina Trapani's excellent Hugo implementation.
 
-This is a map of life, where each week represents a small box in a grid. The visualization helps put life into perspective by showing the finite nature of time and encouraging reflection on how we spend our weeks.
+## 🎯 What's This All About?
 
-## 🌟 Inspiration & Attribution
+Ever wondered what your life looks like as a grid? Well, wonder no more! This visualization turns each week of your existence into a small box. The result is both terrifying and inspiring - you can literally see your time laid out before you. Perfect for those "what am I doing with my life?" moments. 🤔
 
-This project is built upon the shoulders of giants:
+## 🌟 Standing on the Shoulders of Giants
 
-- **Original Concept**: [Life in Weeks](https://waitbutwhy.com/2014/05/life-weeks.html) by Tim Urban at Wait But Why
-- **Hugo Implementation**: [Gina Trapani's Life in Weeks](https://github.com/ginatrapani/life-in-weeks) - The original code this project adapts from
-- **Design & Algorithm**: Adapted from [Buster Benson's implementation](https://busterbenson.com/life-in-weeks)
+This project wouldn't exist without these amazing humans:
 
-### What This Project Does
+- **Original Brain-Melter**: [Life in Weeks](https://waitbutwhy.com/2014/05/life-weeks.html) by Tim Urban at Wait But Why (seriously, go read this)
+- **Hugo Master**: [Gina Trapani's Life in Weeks](https://github.com/ginatrapani/life-in-weeks) - The code this project lovingly adapts
+- **World Events Genius**: [Life Weeks App](https://lifeweeks.app/) by [Cory Zue](https://www.coryzue.com/) - Where I got the brilliant idea to add historical context
 
-This is a **Hugo to Next.js adaptation** of Gina Trapani's excellent Life in Weeks implementation. We've:
+### What Makes This Version Special?
 
-- ✅ **Converted from Hugo to Next.js** - Modern React-based implementation
-- ✅ **Preserved Gina's algorithms** - Row breaking, decade navigation, color coding
-- ✅ **Enhanced responsive design** - Pixel-perfect layout calculations for all screen sizes
-- ✅ **Maintained visual fidelity** - Matches the original design and user experience
-- ✅ **Added modern optimizations** - TypeScript, responsive breakpoints, smooth scrolling
+This is basically Gina's Hugo version, but with React superpowers! 🦸‍♂️
 
-## 🚀 Features
+- ✅ **Hugo → Next.js Translation** - Because who doesn't love React?
+- ✅ **Kept the Good Stuff** - All of Gina's clever algorithms intact
+- ✅ **Mobile-Friendly** - Your existential crisis works on phones too
+- ✅ **Looks Identical** - If it ain't broke, don't fix it
+- ✅ **TypeScript Everything** - For when you want your life visualization to be type-safe
 
-- **Responsive Grid Layout**: Automatically adjusts for desktop, tablet, and mobile screens
-- **Decade Navigation**: Sticky header with progress tracking as you scroll through decades
-- **Event Timeline**: Add important life events with custom colors and descriptions
-- **Smooth Interactions**: Hover effects, tooltips, and smooth scrolling navigation
-- **Pixel-Perfect Responsive**: Uses real container width calculations for accurate layout
-- **Color-Coded Life Phases**: Visual representation of different periods (school, work, locations)
+## 🚀 Cool Stuff This Thing Does
+
+- **Works Everywhere**: Desktop, tablet, phone - your life crisis is portable! 📱
+- **Time Travel Navigation**: Jump between decades like you're Doctor Who
+- **Life Events**: Mark the important stuff (and the questionable decisions)
+- **Smooth as Butter**: Hover effects and animations that would make Apple jealous
+- **Pixel Perfect**: Because if you're going to visualize your mortality, might as well look good
+- **Color-Coded Everything**: Different colors for different life phases (school = blue, work = help)
 
 ## 🛠️ Tech Stack
 
@@ -467,7 +469,7 @@ This project is open source and available under the [MIT License](LICENSE).
 
 - **Tim Urban** - For the original Life in Weeks concept that inspired millions
 - **Gina Trapani** - For the brilliant Hugo implementation this project is based on
-- **Buster Benson** - For pioneering the digital life visualization format
+- **Cory Zue** - For the inspiring [Life Weeks App](https://lifeweeks.app/) and world events overlay concept
 - **Wait But Why** - For making complex ideas accessible and inspiring reflection
 
 ---
