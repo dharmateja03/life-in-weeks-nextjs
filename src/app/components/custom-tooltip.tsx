@@ -5,11 +5,11 @@ import { createPortal } from 'react-dom'
 
 interface CustomTooltipProps {
   content: string
-  hasDetails: boolean
+  hasDetails?: boolean  // Optional for backward compatibility
   children: React.ReactNode
 }
 
-export function CustomTooltip({ content, hasDetails, children }: CustomTooltipProps) {
+export function CustomTooltip({ content, children }: CustomTooltipProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [isSticky, setIsSticky] = useState(false)
   const [position, setPosition] = useState({ x: 0, y: 0 })
@@ -99,6 +99,26 @@ export function CustomTooltip({ content, hasDetails, children }: CustomTooltipPr
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [isSticky, isVisible])
+
+  // Dismiss tooltip when user scrolls
+  useEffect(() => {
+    const handleScroll = () => {
+      if (isSticky) {
+        setIsSticky(false)
+        setIsHovered(false)
+      }
+    }
+
+    if (isSticky) {
+      window.addEventListener('scroll', handleScroll, { passive: true })
+      document.addEventListener('scroll', handleScroll, { passive: true })
+    }
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      document.removeEventListener('scroll', handleScroll)
+    }
+  }, [isSticky])
 
   // Format content with clickable links
   const formatContent = (text: string) => {
