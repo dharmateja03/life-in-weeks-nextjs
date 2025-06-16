@@ -41,7 +41,7 @@ export function CustomTooltip({ content, hasDetails, children }: CustomTooltipPr
   }
 
   const handleMouseEnter = () => {
-    if (!hasDetails) return
+    if (!content) return
     
     const rect = triggerRef.current?.getBoundingClientRect()
     if (rect) {
@@ -57,7 +57,7 @@ export function CustomTooltip({ content, hasDetails, children }: CustomTooltipPr
   }
 
   const handleClick = (e: React.MouseEvent) => {
-    if (!hasDetails) return
+    if (!content) return
     
     e.preventDefault()
     e.stopPropagation()
@@ -65,7 +65,7 @@ export function CustomTooltip({ content, hasDetails, children }: CustomTooltipPr
     const rect = triggerRef.current?.getBoundingClientRect()
     if (rect) {
       updatePosition(rect)
-      setIsSticky(!isSticky)
+      setIsSticky(true)
       setIsHovered(true)
     }
   }
@@ -80,9 +80,9 @@ export function CustomTooltip({ content, hasDetails, children }: CustomTooltipPr
     }
 
     const handleClickOutside = (e: MouseEvent) => {
-      if (isSticky && !triggerRef.current?.contains(e.target as Node)) {
+      if (isSticky && triggerRef.current && !triggerRef.current.contains(e.target as Node)) {
         const tooltip = document.getElementById(tooltipId.current)
-        if (tooltip && !tooltip.contains(e.target as Node)) {
+        if (!tooltip || !tooltip.contains(e.target as Node)) {
           setIsSticky(false)
           setIsHovered(false)
         }
@@ -129,7 +129,7 @@ export function CustomTooltip({ content, hasDetails, children }: CustomTooltipPr
   }
 
   const renderTooltip = () => {
-    if (!isVisible || !hasDetails || typeof window === 'undefined') return null
+    if (!isVisible || !content || typeof window === 'undefined') return null
 
     return createPortal(
       <div
@@ -139,14 +139,14 @@ export function CustomTooltip({ content, hasDetails, children }: CustomTooltipPr
           left: position.x,
           top: position.y,
           zIndex: 1000,
-          backgroundColor: 'rgba(0, 0, 0, 0.75)',
+          backgroundColor: isSticky ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 0, 0.75)',
           color: 'white',
           fontFamily: "'Red Hat Display', system-ui, -apple-system, sans-serif",
           fontSize: '13px',
           fontWeight: '500',
           borderRadius: '6px',
           padding: '12px 16px',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+          boxShadow: isSticky ? '0 4px 20px rgba(0,0,0,0.6)' : '0 4px 20px rgba(0,0,0,0.4)',
           maxWidth: '400px',
           minWidth: '200px',
           pointerEvents: isSticky ? 'auto' : 'none',
@@ -162,18 +162,17 @@ export function CustomTooltip({ content, hasDetails, children }: CustomTooltipPr
         }}>
           {formatContent(content)}
         </div>
-        <div style={{ 
-          fontSize: '10px', 
-          color: '#ccc', 
-          marginTop: '8px',
-          borderTop: '1px solid #444',
-          paddingTop: '6px'
-        }}>
-          {isSticky 
-            ? 'Click outside or press ESC to close'
-            : 'Click to make tooltip sticky for copying links'
-          }
-        </div>
+        {isSticky && (
+          <div style={{ 
+            fontSize: '10px', 
+            color: '#ccc', 
+            marginTop: '8px',
+            borderTop: '1px solid #444',
+            paddingTop: '6px'
+          }}>
+            Click outside or press ESC to dismiss
+          </div>
+        )}
       </div>,
       document.body
     )
@@ -187,7 +186,7 @@ export function CustomTooltip({ content, hasDetails, children }: CustomTooltipPr
         onMouseLeave={handleMouseLeave}
         onClick={handleClick}
         style={{
-          cursor: hasDetails ? 'pointer' : 'default',
+          cursor: content ? 'pointer' : 'default',
           display: 'inline-block'
         }}
       >
