@@ -60,7 +60,8 @@ export default function HomePage() {
         <div className="mt-3">
           <p>👋 Hi, I&apos;m <a href={APP_CONFIG.website}>{APP_CONFIG.name}</a>. Each week of my life is a little box.</p>
           
-          <p>💡 Inspired by <a href="https://waitbutwhy.com/2014/05/life-weeks.html">Wait But Why</a> and <a href="https://github.com/ginatrapani/life-in-weeks">Gina Trapani</a>. Code is <a href="https://github.com/dingran/life-in-weeks-nextjs">here</a>.</p>
+          <p>💡 Inspired by <a href="https://waitbutwhy.com/2014/05/life-weeks.html">Wait But Why</a>. Adapted from <a href="https://github.com/ginatrapani/life-in-weeks">Gina&apos;s work</a>.<br/>
+          💻 My code is <a href="https://github.com/dingran/life-in-weeks-nextjs">here</a>. Also <a href="https://www.coryzue.com/">Cory</a> built <a href="https://lifeweeks.app/">an app</a> for this.</p>
         </div>
         
         {/* Main weeks visualization grid */}
