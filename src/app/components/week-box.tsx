@@ -34,6 +34,9 @@ export function WeekBox({ box, className = '', style = {}, isCompactMode = false
     box.tooltip.includes('–') && 
     (box.tooltip.includes('http') || box.tooltip.length > 50)
   
+  // In compact mode, show custom tooltip for all events to display full name
+  const shouldUseCustomTooltip = hasDetails || (isCompactMode && box.type === 'event')
+  
   const buttonElement = (
     <button
       type="button"
@@ -45,10 +48,10 @@ export function WeekBox({ box, className = '', style = {}, isCompactMode = false
     </button>
   )
 
-  // Use rich tooltip for detailed events, simple title for others
-  if (hasDetails) {
+  // Use custom tooltip for detailed events or compact mode events
+  if (shouldUseCustomTooltip) {
     return (
-      <CustomTooltip content={box.tooltip} hasDetails={true}>
+      <CustomTooltip content={box.tooltip}>
         {buttonElement}
       </CustomTooltip>
     )

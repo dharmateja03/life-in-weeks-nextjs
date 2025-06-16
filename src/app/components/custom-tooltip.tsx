@@ -20,11 +20,51 @@ export function CustomTooltip({ content, children }: CustomTooltipProps) {
 
   // Calculate tooltip position
   const updatePosition = (rect: DOMRect) => {
-    const tooltipWidth = 400 // max width
-    const tooltipHeight = 100 // estimated height
+    const tooltipWidth = 300 // Reduced max width for closer positioning
     
-    let x = rect.left + rect.width / 2 - tooltipWidth / 2
-    let y = rect.top - tooltipHeight - 10
+    // Get actual tooltip height by measuring existing tooltip or creating temporary one
+    const getActualHeight = () => {
+      const existingTooltip = document.getElementById(tooltipId.current)
+      if (existingTooltip) {
+        return existingTooltip.offsetHeight
+      }
+      
+      // Create temporary tooltip to measure height
+      const temp = document.createElement('div')
+      temp.style.position = 'absolute'
+      temp.style.visibility = 'hidden'
+      temp.style.pointerEvents = 'none'
+      temp.style.left = '-9999px'
+      temp.style.top = '-9999px'
+      temp.style.backgroundColor = 'rgba(0, 0, 0, 0.9)'
+      temp.style.color = 'white'
+      temp.style.fontFamily = "'Red Hat Display', system-ui, -apple-system, sans-serif"
+      temp.style.fontSize = '13px'
+      temp.style.fontWeight = '500'
+      temp.style.borderRadius = '6px'
+      temp.style.padding = '12px 16px'
+      temp.style.maxWidth = `${tooltipWidth}px`
+      temp.style.minWidth = '150px'
+      temp.style.wordWrap = 'break-word'
+      temp.style.lineHeight = '1.5'
+      temp.innerHTML = `<div style="white-space: pre-wrap; word-break: break-word;">${content}</div>`
+      
+      if (isSticky) {
+        temp.innerHTML += `<div style="font-size: 10px; color: #ccc; margin-top: 8px; border-top: 1px solid #444; padding-top: 6px;">Click outside or press ESC to dismiss</div>`
+      }
+      
+      document.body.appendChild(temp)
+      const height = temp.offsetHeight
+      document.body.removeChild(temp)
+      
+      return height
+    }
+    
+    const tooltipHeight = getActualHeight()
+    
+    // Position so bottom of tooltip is just above top of cell
+    let x = rect.left + rect.width / 2 - tooltipWidth / 2 // Center horizontally on cell
+    let y = rect.top - tooltipHeight - 5 // Bottom of tooltip 5px above cell top
     
     // Keep within viewport horizontally
     if (x < 10) x = 10
@@ -32,9 +72,9 @@ export function CustomTooltip({ content, children }: CustomTooltipProps) {
       x = window.innerWidth - tooltipWidth - 10
     }
     
-    // Keep within viewport vertically
+    // If no space above, show below the cell
     if (y < 10) {
-      y = rect.bottom + 10 // Show below if no space above
+      y = rect.bottom + 5 // 5px below the cell
     }
     
     setPosition({ x, y })
@@ -167,8 +207,8 @@ export function CustomTooltip({ content, children }: CustomTooltipProps) {
           borderRadius: '6px',
           padding: '12px 16px',
           boxShadow: isSticky ? '0 4px 20px rgba(0,0,0,0.6)' : '0 4px 20px rgba(0,0,0,0.4)',
-          maxWidth: '400px',
-          minWidth: '200px',
+          maxWidth: '300px',
+          minWidth: '150px',
           pointerEvents: isSticky ? 'auto' : 'none',
           userSelect: isSticky ? 'text' : 'none',
           wordWrap: 'break-word',
