@@ -8,6 +8,44 @@ html, body {
   height: 100%;
 }
 
+/* Compact Mode Toggle - higher specificity to override container reset */
+.life-in-weeks-container .weeks-grid-container .compact-toggle {
+  text-align: center;
+  margin: 0 0 0.5rem 0;  /* No top margin (relying on container), smaller space below */
+  padding: 0;  /* Remove extra padding */
+}
+
+.life-in-weeks-container .toggle-button {
+  background: #f8f9fa;  /* Light gray background instead of blue */
+  color: var(--text-color);  /* Use same text color as body */
+  border: 1px solid #ccc;  /* Light gray, thinner border */
+  border-radius: 8px;
+  padding: 8px 16px;  /* Smaller padding for more compact look */
+  font-size: var(--body-font-size-desktop);  /* Match body text size */
+  font-weight: 500;    /* Less bold */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-family);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);  /* Subtle shadow */
+}
+
+@media only screen and (max-width: 768px) {
+  .life-in-weeks-container .toggle-button {
+    font-size: var(--body-font-size-mobile);  /* Match mobile body text size */
+  }
+}
+
+.life-in-weeks-container .toggle-button:hover {
+  opacity: 0.8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);  /* Enhanced shadow on hover */
+}
+
+.life-in-weeks-container .toggle-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);   /* Original shadow when pressed */
+}
+
 /* CSS Variables for theming */
 :root {
   --main-bg-color: #f0f8ff;
@@ -211,7 +249,7 @@ html, body {
 /* Grid layout */
 .weeks-grid-container {
   width: 100%;
-  margin: 1rem 0 0 0;
+  margin: 0.5rem 0 0 0;  /* Reduced top margin to work with toggle spacing */
   padding: 0 0 2rem 0;
 }
 
@@ -227,27 +265,27 @@ html, body {
 .life-in-weeks .week,
 .life-in-weeks .birthday,
 .life-in-weeks .btn {
-  height: 32px !important;
-  max-height: 32px !important;
-  min-height: 32px !important;
-  padding: 0 4px !important;
-  margin: 0 !important;
+  height: 32px;
+  max-height: 32px;
+  min-height: 32px;
+  padding: 0 4px;
+  margin: 0;
   border: 1px solid var(--week-cell-border, #ccc);
   background-color: white;
   color: var(--week-cell-text, #333);
   font-size: var(--body-font-size-desktop);
   cursor: pointer;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  text-align: center !important;
-  line-height: 1 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1;
   border-radius: 3px;
-  box-sizing: border-box !important;
-  overflow: hidden !important;
-  white-space: nowrap !important;
-  vertical-align: top !important;
-  font-weight: normal !important;
+  box-sizing: border-box;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: top;
+  font-weight: normal;
   position: relative;
 }
 
@@ -286,9 +324,10 @@ html, body {
   .life-in-weeks .birthday,
   .life-in-weeks .btn {
     font-size: var(--body-font-size-mobile);
-    height: 1.8em !important;
-    max-height: 1.8em !important;
-    min-height: 1.8em !important;
+    height: 22px !important;
+    max-height: 22px !important;
+    min-height: 22px !important;
+    line-height: 22px !important;
   }
   
   .life-in-weeks .week {
@@ -312,4 +351,87 @@ html, body {
   .life-in-weeks .event {
     font-size: calc(var(--body-font-size-mobile) * 0.9);
   }
+}
+
+/* Compact Mode Styles - use same container margins as standard mode */
+
+/* Remove old compact mode CSS - using cleaner approach below */
+
+.compact-mode .life-in-weeks .week {
+  min-width: 8px !important;
+  /* Remove fixed width - let flex handle sizing */
+}
+
+.compact-mode .life-in-weeks .birthday,
+.compact-mode .life-in-weeks .event {
+  min-width: fit-content !important;
+  white-space: nowrap !important;
+}
+
+/* Ensure emojis display properly in compact mode */
+.compact-mode .life-in-weeks .birthday,
+.compact-mode .life-in-weeks .event {
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', var(--font-family) !important;
+}
+
+/* Compact mode row spacing */
+.compact-mode .row-wrapper {
+  margin-bottom: 0px !important;
+}
+
+/* Add spacing between toggle and first row */
+.life-in-weeks-container .weeks-grid-container.compact-mode .row-wrapper:first-of-type {
+  margin-top: 0.5rem;
+}
+
+.compact-mode .life-in-weeks .week {
+  flex: 1 1 0 !important; /* Equal width distribution like standard mode */
+}
+
+/* Override responsive breakpoints in compact mode */
+/* Responsive compact mode - keep 16px height, adjust font size */
+@media only screen and (max-width: 768px) {
+  .weeks-grid-container.compact-mode .life-in-weeks .week,
+  .weeks-grid-container.compact-mode .life-in-weeks .birthday,
+  .weeks-grid-container.compact-mode .life-in-weeks .event,
+  .weeks-grid-container.compact-mode .life-in-weeks .btn {
+    font-size: 8px;
+  }
+  
+  .weeks-grid-container.compact-mode .life-in-weeks .event {
+    font-size: 6px;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  .weeks-grid-container.compact-mode .life-in-weeks .week,
+  .weeks-grid-container.compact-mode .life-in-weeks .birthday,
+  .weeks-grid-container.compact-mode .life-in-weeks .event,
+  .weeks-grid-container.compact-mode .life-in-weeks .btn {
+    font-size: 7px;
+  }
+  
+  .weeks-grid-container.compact-mode .life-in-weeks .event {
+    font-size: 5px;
+  }
+}
+
+/* Clean compact mode overrides - 20px height for good balance */
+.weeks-grid-container.compact-mode .life-in-weeks .week,
+.weeks-grid-container.compact-mode .life-in-weeks .birthday,
+.weeks-grid-container.compact-mode .life-in-weeks .event,
+.weeks-grid-container.compact-mode .life-in-weeks .btn,
+.compact-cell {
+  height: 20px !important;
+  max-height: 20px !important;
+  min-height: 20px !important;
+  font-size: 12px !important;
+  line-height: 20px !important;
+  padding: 0px 2px !important;
+}
+
+/* Event cells with smaller font for emojis */
+.weeks-grid-container.compact-mode .life-in-weeks .event,
+.compact-cell.event {
+  font-size: 10px !important;
 }

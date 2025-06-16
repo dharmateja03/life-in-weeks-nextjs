@@ -14,11 +14,14 @@ import {
   processBoxesIntoRows, 
   createTooltip, 
   createBirthdayLabel, 
-  createBirthdayTooltip
+  createBirthdayTooltip,
+  createCompactEventLabel,
+  shouldShowInCompact
 } from '../utils/grid-layout'
 // Auto-generated milestone colors
 import { milestoneColors } from '../utils/milestone-colors'
 import { WeekBox } from './week-box'
+import { CompactToggle } from './compact-toggle'
 
 // Extended event interface for merged events
 interface MergedEvent {
@@ -73,7 +76,12 @@ function getMergedEvents() {
   return merged
 }
 
-export function WeeksGrid() {
+interface WeeksGridProps {
+  isCompactMode: boolean
+  onToggleCompactMode: (compact: boolean) => void
+}
+
+export function WeeksGrid({ isCompactMode, onToggleCompactMode }: WeeksGridProps) {
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
   
   // Handle window resize for responsive row breaking with debouncing
@@ -119,7 +127,7 @@ export function WeeksGrid() {
       
       const birthdayBox: GridBox = {
         type: 'birthday',
-        label: createBirthdayLabel(age, year),
+        label: createBirthdayLabel(age, year, isCompactMode),
         date: birthdayDateStr,
         tooltip: createBirthdayTooltip(birthdayDateStr, age),
         borderClass: 'btn',
@@ -180,26 +188,44 @@ export function WeeksGrid() {
         // Pick the most important event (milestone first, then first event)
         const primaryEvent = eventsForWeek.find(e => e.eventType === 'personal' && e.milestone) || eventsForWeek[0]
         
-        // Create tooltip that includes all events in this week
-        const allEventDescriptions = eventsForWeek.map(e => {
-          const prefix = e.eventType === 'world' ? '🌍 ' : 
-                        e.eventType === 'president' ? '🇺🇸 ' : ''
-          return prefix + e.headline + (e.description ? ` - ${e.description}` : '')
-        }).join('\n')
-        
-        const eventBox: GridBox = {
-          type: 'event',
-          label: primaryEvent.headline,
-          date: weekDateStr,
-          tooltip: createTooltip(weekDateStr, allEventDescriptions),
-          borderClass: 'btn',
-          backgroundClass: 'custom-color', // We'll apply inline styles
-          age: weekAge,
-          year,
-          eventType: primaryEvent.eventType // Use primary event type for styling
+        // In compact mode, check if we should show this event
+        if (isCompactMode && !shouldShowInCompact(primaryEvent.headline)) {
+          // Skip this event in compact mode, treat as empty week
+          const weekBox: GridBox = {
+            type: 'week',
+            label: '',
+            date: weekDateStr,
+            tooltip: createTooltip(weekDateStr, undefined),
+            borderClass: 'btn',
+            backgroundClass: 'custom-color',
+            age: weekAge,
+            year
+          }
+          allBoxes.push(weekBox)
+        } else {
+          // Create tooltip that includes all events in this week
+          const allEventDescriptions = eventsForWeek.map(e => {
+            const prefix = e.eventType === 'world' ? '🌍 ' : 
+                          e.eventType === 'president' ? '🇺🇸 ' : ''
+            return prefix + e.headline + (e.description ? ` - ${e.description}` : '')
+          }).join('\n')
+          
+          const eventLabel = isCompactMode ? createCompactEventLabel(primaryEvent.headline) : primaryEvent.headline
+          
+          const eventBox: GridBox = {
+            type: 'event',
+            label: eventLabel,
+            date: weekDateStr,
+            tooltip: createTooltip(weekDateStr, allEventDescriptions),
+            borderClass: 'btn',
+            backgroundClass: 'custom-color', // We'll apply inline styles
+            age: weekAge,
+            year,
+            eventType: primaryEvent.eventType // Use primary event type for styling
+          }
+          
+          allBoxes.push(eventBox)
         }
-        
-        allBoxes.push(eventBox)
       } else {
         // Empty week box
         const weekBox: GridBox = {
@@ -283,10 +309,14 @@ export function WeeksGrid() {
   }
   
   // Process all boxes together to get proper row numbering
-  const allRows = processBoxesIntoRows(allBoxes)
+  const allRows = processBoxesIntoRows(allBoxes, isCompactMode)
   
   return (
-    <div className="weeks-grid-container">
+    <div className={`weeks-grid-container ${isCompactMode ? 'compact-mode' : ''}`}>
+      <CompactToggle 
+        isCompact={isCompactMode} 
+        onToggle={onToggleCompactMode} 
+      />
       {allRows.map((row, globalRowIndex) => (
         <div key={`row-${globalRowIndex}`} className="row-wrapper">
           {row.map((box, boxIndex) => {
@@ -305,6 +335,7 @@ export function WeeksGrid() {
                 box={box}
                 className={isFuture ? 'future-date' : ''}
                 style={combinedStyles}
+                isCompactMode={isCompactMode}
               />
             )
           })}

@@ -11,10 +11,12 @@ interface WeekBoxProps {
   box: GridBox
   className?: string
   style?: React.CSSProperties
+  isCompactMode?: boolean
 }
 
-export function WeekBox({ box, className = '', style = {} }: WeekBoxProps) {
-  const baseClasses = `btn ${box.type} ${box.borderClass} ${box.backgroundClass}`
+export function WeekBox({ box, className = '', style = {}, isCompactMode = false }: WeekBoxProps) {
+  const compactClass = isCompactMode ? 'compact-cell' : ''
+  const baseClasses = `btn ${box.type} ${box.borderClass} ${box.backgroundClass} ${compactClass}`
   const fullClassName = `${baseClasses} ${className}`.trim()
   
   // Additional classes based on box type

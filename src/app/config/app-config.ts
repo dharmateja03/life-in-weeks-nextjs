@@ -24,6 +24,9 @@ export interface AppConfig {
   showJapanLifeExpectancy: boolean  // Show Japan male life expectancy marker
   japanLifeExpectancyAge: number    // Japan male life expectancy age
   
+  // Layout Settings
+  defaultCompactMode: boolean       // Start in compact view (fits entire life on screen)
+  
   // Responsive Settings
   debounceResizeMs: number          // Debounce time for window resize events
 }
@@ -45,6 +48,9 @@ export const APP_CONFIG: AppConfig = {
   // Grid Display Settings
   showRowNumbers: false,            // Clean look without row numbers
   showBirthdayMarkers: true,        // Keep birthday markers for navigation
+  
+  // Layout Settings
+  defaultCompactMode: false,        // Start with standard view, user can toggle
   
   // Life Expectancy Settings
   showLifeExpectancy: true,         // Show life expectancy marker for perspective
