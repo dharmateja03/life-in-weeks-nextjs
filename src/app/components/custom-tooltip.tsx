@@ -49,10 +49,6 @@ export function CustomTooltip({ content, children }: CustomTooltipProps) {
       temp.style.lineHeight = '1.5'
       temp.innerHTML = `<div style="white-space: pre-wrap; word-break: break-word;">${content}</div>`
       
-      if (isSticky) {
-        temp.innerHTML += `<div style="font-size: 10px; color: #ccc; margin-top: 8px; border-top: 1px solid #444; padding-top: 6px;">Click outside or press ESC to dismiss</div>`
-      }
-      
       document.body.appendChild(temp)
       const height = temp.offsetHeight
       document.body.removeChild(temp)
@@ -82,6 +78,11 @@ export function CustomTooltip({ content, children }: CustomTooltipProps) {
 
   const handleMouseEnter = () => {
     if (!content) return
+    
+    // Dismiss any existing sticky tooltips globally
+    document.dispatchEvent(new CustomEvent('dismissAllTooltips', { 
+      detail: { except: tooltipId.current } 
+    }))
     
     const rect = triggerRef.current?.getBoundingClientRect()
     if (rect) {
@@ -160,6 +161,23 @@ export function CustomTooltip({ content, children }: CustomTooltipProps) {
     }
   }, [isSticky])
 
+  // Listen for global dismiss event from other tooltips
+  useEffect(() => {
+    const handleGlobalDismiss = (event: CustomEvent) => {
+      const { except } = event.detail
+      if (except !== tooltipId.current && isSticky) {
+        setIsSticky(false)
+        setIsHovered(false)
+      }
+    }
+
+    document.addEventListener('dismissAllTooltips', handleGlobalDismiss as EventListener)
+
+    return () => {
+      document.removeEventListener('dismissAllTooltips', handleGlobalDismiss as EventListener)
+    }
+  }, [isSticky])
+
   // Format content with clickable links
   const formatContent = (text: string) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g
@@ -222,17 +240,6 @@ export function CustomTooltip({ content, children }: CustomTooltipProps) {
         }}>
           {formatContent(content)}
         </div>
-        {isSticky && (
-          <div style={{ 
-            fontSize: '10px', 
-            color: '#ccc', 
-            marginTop: '8px',
-            borderTop: '1px solid #444',
-            paddingTop: '6px'
-          }}>
-            Click outside or press ESC to dismiss
-          </div>
-        )}
       </div>,
       document.body
     )
