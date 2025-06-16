@@ -65,42 +65,12 @@ export function generateMilestoneColors(): string[] {
   const colors = milestoneEvents.map((_, index) => getColorAtIndex(index))
   
   // Validation
-  console.log(`✅ Generated ${colors.length} colors for ${milestoneEvents.length} milestones`)
   if (colors.length !== milestoneEvents.length) {
-    console.warn(`⚠️ Color count mismatch: ${colors.length} colors vs ${milestoneEvents.length} milestones`)
+    throw new Error(`Color count mismatch: ${colors.length} colors vs ${milestoneEvents.length} milestones`)
   }
   
   return colors
 }
 
-// Validate color mapping and provide debug info
-export function validateColorMapping() {
-  const milestoneEvents = detectMilestoneEvents()
-  const generatedColors = generateMilestoneColors()
-  
-  console.group('🎨 Milestone Color Mapping')
-  console.log(`Total milestone events: ${milestoneEvents.length}`)
-  console.log(`Generated colors: ${generatedColors.length}`)
-  
-  milestoneEvents.forEach((milestone, index) => {
-    const color = generatedColors[index]
-    console.log(`${index}: ${milestone.date} - ${milestone.event.headline} → ${color}`)
-  })
-  console.groupEnd()
-  
-  return {
-    isValid: generatedColors.length === milestoneEvents.length,
-    milestoneCount: milestoneEvents.length,
-    colorCount: generatedColors.length,
-    events: milestoneEvents,
-    colors: generatedColors
-  }
-}
-
 // Export the automatically generated colors
 export const milestoneColors = generateMilestoneColors()
-
-// Development helper - call in dev mode to see mapping
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-  validateColorMapping()
-}
