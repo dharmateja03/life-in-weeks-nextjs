@@ -47,7 +47,13 @@ import './weeks.css'
  * @returns The complete Life in Weeks application
  */
 export default function HomePage() {
-  const [isCompactMode, setIsCompactMode] = useState(APP_CONFIG.defaultCompactMode)
+  // Default to compact mode on mobile, standard on desktop
+  const [isCompactMode, setIsCompactMode] = useState(() => {
+    if (typeof window === 'undefined') {
+      return APP_CONFIG.defaultCompactMode // Server-side fallback
+    }
+    return window.innerWidth <= 768 // Mobile/tablet uses compact mode
+  })
 
   return (
     <div className="life-in-weeks-container">
