@@ -249,9 +249,9 @@ export const lifeEvents: EventsData = {
       headline: "🎻 Started Cello Lessons"
     }
   ],
-  "2024-01-01": [
+  "2024-01-05": [
     {
-      headline: "🇬🇧 London"
+      headline: "🎤 London for Jay Chou"
     }
   ],
   "2024-02-15": [
@@ -276,11 +276,6 @@ export const lifeEvents: EventsData = {
   "2024-11-22": [
     {
       headline: "🇹🇼 Taiwan"
-    }
-  ],
-  "2025-01-05": [
-    {
-      headline: "🎤 London for Jay Chou"
     }
   ],
   "2025-06-14": [
