@@ -156,6 +156,19 @@ html, body {
   width: auto;
 }
 
+/* Ultrawide screens - use more horizontal space */
+@media only screen and (min-width: 1800px) {
+  .life-in-weeks {
+    margin: 0 10% 2rem 10%;
+  }
+}
+
+@media only screen and (min-width: 1400px) and (max-width: 1799px) {
+  .life-in-weeks {
+    margin: 0 15% 2rem 15%;
+  }
+}
+
 @media only screen and (max-width: 1024px) and (min-width: 769px) {
   .life-in-weeks {
     margin: 0 10% 2rem 10%;
@@ -265,9 +278,9 @@ html, body {
 .life-in-weeks .week,
 .life-in-weeks .birthday,
 .life-in-weeks .btn {
-  height: 32px;
-  max-height: 32px;
-  min-height: 32px;
+  height: 26px;
+  max-height: 26px;
+  min-height: 26px;
   padding: 0 4px;
   margin: 0;
   border: 1px solid var(--week-cell-border, #ccc);
@@ -324,15 +337,15 @@ html, body {
   .life-in-weeks .birthday,
   .life-in-weeks .btn {
     font-size: var(--body-font-size-mobile);
-    height: 22px !important;
-    max-height: 22px !important;
-    min-height: 22px !important;
-    line-height: 22px !important;
+    height: 18px !important;
+    max-height: 18px !important;
+    min-height: 18px !important;
+    line-height: 18px !important;
   }
   
   .life-in-weeks .week {
     padding: 1px 1px;
-    font-size: calc(var(--body-font-size-mobile) * 0.9);
+    font-size: calc(var(--body-font-size-mobile) * 0.92);
   }
   
   .life-in-weeks .birthday,
@@ -344,12 +357,12 @@ html, body {
 
 @media only screen and (max-width: 480px) {
   .life-in-weeks .week {
-    font-size: calc(var(--body-font-size-mobile) * 0.8);
+    font-size: calc(var(--body-font-size-mobile) * 0.85);
   }
   
   .life-in-weeks .birthday,
   .life-in-weeks .event {
-    font-size: calc(var(--body-font-size-mobile) * 0.9);
+    font-size: calc(var(--body-font-size-mobile) * 0.92);
   }
 }
 

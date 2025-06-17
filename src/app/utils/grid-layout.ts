@@ -22,32 +22,56 @@ export interface RowBreakCalculation {
 
 // Responsive layout based on actual measured container widths
 export const GRID_CONSTANTS = {
+  ultrawide: {
+    containerWidth: 1440,     // 1800px × 80% = 1440px available
+    basePadding: 8,           
+    charWidth: 8,             
+    weekBoxMinWidth: 20,      
+  },
+  wide: {
+    containerWidth: 1190,     // 1400px × 85% = 1190px available
+    basePadding: 8,           
+    charWidth: 8,             
+    weekBoxMinWidth: 20,      
+  },
   desktop: {
     containerWidth: 668,      // Actual measured width at desktop
-    basePadding: 8,           
+    basePadding: 7,           // Slightly reduced from 8 to match tighter spacing
     charWidth: 8,             
     weekBoxMinWidth: 20,      
   },
   tablet: {
     containerWidth: 573,      // Actual measured width at 769px viewport
-    basePadding: 5,           
+    basePadding: 4,           // Slightly reduced from 5 to match tighter spacing
     charWidth: 7,             
     weekBoxMinWidth: 17,      
   },
   mobile: {
     containerWidth: 737,      // 768px viewport × 96% = 737px available
-    basePadding: 4,
+    basePadding: 3,           // Slightly reduced from 4 to match tighter spacing  
     charWidth: 6,
     weekBoxMinWidth: 15,
   },
   extraSmall: {
     containerWidth: 307,      // TODO: Measure actual width
-    basePadding: 3,
+    basePadding: 2,           // Slightly reduced from 3 to match tighter spacing
     charWidth: 5,
     weekBoxMinWidth: 12,
   },
   compact: {
     // Compact mode uses same container widths but smaller cell dimensions
+    ultrawide: {
+      containerWidth: 1440,   // Same as normal ultrawide
+      basePadding: 1,
+      charWidth: 8,
+      weekBoxMinWidth: 8,
+    },
+    wide: {
+      containerWidth: 1190,   // Same as normal wide
+      basePadding: 1,
+      charWidth: 8,
+      weekBoxMinWidth: 8,
+    },
     desktop: {
       containerWidth: 668,    // Same as normal desktop
       basePadding: 1,
@@ -87,15 +111,19 @@ export function getResponsiveConstants(compactMode: boolean = false) {
   const width = window.innerWidth
   
   // Determine which breakpoint we're in (matching CSS media queries)
-  let breakpoint: 'desktop' | 'tablet' | 'mobile' | 'extraSmall'
+  let breakpoint: 'ultrawide' | 'wide' | 'desktop' | 'tablet' | 'mobile' | 'extraSmall'
   if (width < 480) {
     breakpoint = 'extraSmall'
   } else if (width <= 768) {  // Changed from < to <= to match CSS
     breakpoint = 'mobile'
   } else if (width < 1024) {
     breakpoint = 'tablet'
-  } else {
+  } else if (width < 1400) {
     breakpoint = 'desktop'
+  } else if (width < 1800) {
+    breakpoint = 'wide'
+  } else {
+    breakpoint = 'ultrawide'
   }
   
   // Return compact or normal constants for the same breakpoint
