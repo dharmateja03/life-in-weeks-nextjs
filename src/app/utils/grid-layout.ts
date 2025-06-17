@@ -103,12 +103,38 @@ export const GRID_CONSTANTS = {
  * Calculate dynamic grid constants based on actual measured container width
  */
 export function calculateDynamicConstants(containerWidth: number, compactMode: boolean = false) {
-  // Base constants that scale with container width
+  // Calculate character width based on container width
+  // This scales from 5px (small mobile) to 8px (desktop) based on container size
+  let charWidth: number
+  if (compactMode) {
+    // Compact mode uses smaller, more consistent character widths
+    charWidth = containerWidth < 400 ? 5 : 6
+  } else {
+    // Normal mode scales character width with container/font size
+    if (containerWidth < 350) {
+      charWidth = 5  // Extra small mobile
+    } else if (containerWidth < 500) {
+      charWidth = 6  // Mobile
+    } else if (containerWidth < 650) {
+      charWidth = 7  // Tablet
+    } else {
+      charWidth = 8  // Desktop and larger
+    }
+  }
+  
+  // Scale padding more appropriately for different screen sizes
+  const basePadding = compactMode ? 1 : Math.max(2, Math.min(8, Math.floor(containerWidth / 150)))
+  
+  // Scale minimum week box width
+  const weekBoxMinWidth = compactMode ? 
+    Math.max(4, Math.floor(containerWidth / 100)) : 
+    Math.max(12, Math.min(20, Math.floor(containerWidth / 50)))
+  
   const baseConstants = {
     containerWidth,
-    basePadding: compactMode ? 1 : Math.max(2, Math.floor(containerWidth / 200)), // Scale padding with width
-    charWidth: compactMode ? 6 : 8, // Character width estimation
-    weekBoxMinWidth: compactMode ? 8 : Math.max(15, Math.floor(containerWidth / 80)) // Scale min width
+    basePadding,
+    charWidth,
+    weekBoxMinWidth
   }
   
   return baseConstants
