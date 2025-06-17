@@ -43,8 +43,10 @@ export const APP_CONFIG: AppConfig = {
   defaultShowWorldEvents: true,     // Show world events for historical context
   defaultShowPresidents: false,     // US presidents off by default (can be enabled if needed)
   
-  // Personal Timeline Settings
-  birthDate: "PLACEHOLDER_BIRTH_DATE",
+  // Personal Timeline Settings (requires environment variables for sensitive dates)
+  birthDate: process.env.REAL_BIRTH_DATE || (() => {
+    throw new Error('REAL_BIRTH_DATE environment variable is required. Please check your .env.local file.')
+  })(),
   name: "Ran Ding",
   website: "https://dingran.me",
   

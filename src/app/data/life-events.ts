@@ -1,6 +1,14 @@
-// Life Events Data - Ran Ding's Life Timeline
+// Life Events Data - Personal Life Timeline (with privacy protection for sensitive dates)
 
 import { APP_CONFIG, DERIVED_CONFIG } from '../config/app-config'
+
+// Get date from environment variable - required for sensitive dates
+function getRequiredDate(envVar: string): string {
+  if (typeof process !== 'undefined' && process.env && process.env[envVar]) {
+    return process.env[envVar]!
+  }
+  throw new Error(`Environment variable ${envVar} is required for sensitive dates. Please check your .env.local file.`)
+}
 
 /**
  * LifeEvent Interface - Defines the structure for life events
@@ -27,7 +35,7 @@ export interface LifeEvent {
 export type EventsData = Record<string, LifeEvent[]>
 
 export const lifeEvents: EventsData = {
-  "PLACEHOLDER_BIRTH_DATE": [
+  [getRequiredDate("REAL_BIRTH_DATE")]: [
     {
       headline: "🐣 Born"
     }
@@ -60,7 +68,7 @@ export const lifeEvents: EventsData = {
       description: "Did Physics Olympiad instead of SATs. Went to Nanjing University, but they enrolled me in the wrong major—I stuck with it anyway ¯\\_(ツ)_/¯"
     }
   ],
-  "2006-11-01": [
+  [getRequiredDate("REAL_MET_WIFE_DATE")]: [
     {
       headline: "💕 Met My Future Wife"
     }
@@ -83,7 +91,7 @@ export const lifeEvents: EventsData = {
       description: "CityU in Hong Kong, an eye-opening experience compared to my school (Nanjing University)."
     }
   ],
-  "PLACEHOLDER_MARRIAGE_DATE": [
+  [getRequiredDate("REAL_MARRIAGE_DATE")]: [
     {
       headline: "💍 Married"
     }
@@ -206,7 +214,7 @@ export const lifeEvents: EventsData = {
       description: "Utah national parks hiking adventure: https://www.dingran.me/blog/utah-trip"
     }
   ],
-  "PLACEHOLDER_CITIZENSHIP_DATE": [
+  [getRequiredDate("REAL_CITIZENSHIP_DATE")]: [
     {
       headline: "🇺🇸 Became a US citizen",
       description: "Became a US citizen, mostly for the ability to travel abroad without needing visas."

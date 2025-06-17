@@ -24,19 +24,35 @@ yarn dev
 
 ## Configuration
 
-Edit `src/app/config/app-config.ts`:
+### Privacy Protection for Sensitive Dates
 
+This codebase protects sensitive personal information. For your own deployment:
+
+1. **Create `.env.local`** (git-ignored):
+```bash
+# Required environment variables for sensitive dates
+REAL_BIRTH_DATE=1990-01-15
+REAL_MET_WIFE_DATE=2010-02-14
+REAL_MARRIAGE_DATE=2015-06-01
+REAL_CITIZENSHIP_DATE=2020-07-04
+```
+
+2. **Configure other settings** in `src/app/config/app-config.ts`:
 ```typescript
 export const APP_CONFIG = {
-  birthDate: "1990-01-15",
-  name: "John Doe",
-  website: "https://johndoe.dev",
+  name: "Your Name",
+  website: "https://yourwebsite.com",
   maxAge: 85,
   showLifeExpectancy: true,
   defaultShowWorldEvents: true,
   defaultShowPresidents: false,
+  showPersonalEventDates: false, // true = show full dates, false = month/year only
 }
 ```
+
+### For Vercel/Production Deployment
+
+Add the same environment variables in your Vercel dashboard under Project Settings → Environment Variables.
 
 ## Adding Life Events
 
