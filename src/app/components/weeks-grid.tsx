@@ -8,7 +8,7 @@ import { lifeEvents, WEEKS_CONFIG } from '../data/life-events'
 import { worldEvents } from '../data/world-events'
 import { usPresidents } from '../data/us-presidents'
 import { APP_CONFIG } from '../config/app-config'
-import { formatDateString, getAge } from '../utils/date-processing'
+import { formatDateString, getAge, getWeekStartSunday } from '../utils/date-processing'
 import { 
   GridBox, 
   processBoxesIntoRows, 
@@ -163,11 +163,25 @@ export function WeeksGrid({ isCompactMode, onToggleCompactMode }: WeeksGridProps
     
     // Process all 53 weeks in the year (0-52)
     for (let week = 0; week <= 52; week++) {
-      // Don't skip week 0 for birth year - we need to check birth date events
-      // if (week === 0 && age === 0) continue
+      let weekDate: Date
       
-      const weekDate = new Date(year, startDate.getMonth(), startDate.getDate())
-      weekDate.setDate(weekDate.getDate() + (week * 7))
+      if (age === 0) {
+        // For birth year, start from the week containing the birth date
+        if (week === 0) {
+          // Week 0 is the week containing the birth date
+          weekDate = getWeekStartSunday(startDate)
+        } else {
+          // Subsequent weeks are 7 days apart from week 0
+          const baseWeek = getWeekStartSunday(startDate)
+          weekDate = new Date(baseWeek)
+          weekDate.setDate(weekDate.getDate() + (week * 7))
+        }
+      } else {
+        // For other years, start from anniversary date
+        const anniversaryDate = new Date(year, startDate.getMonth(), startDate.getDate())
+        anniversaryDate.setDate(anniversaryDate.getDate() + (week * 7))
+        weekDate = getWeekStartSunday(anniversaryDate)
+      }
       
       // Skip if this week is beyond the next birthday
       const nextBirthday = new Date(year + 1, startDate.getMonth(), startDate.getDate())
@@ -180,6 +194,7 @@ export function WeeksGrid({ isCompactMode, onToggleCompactMode }: WeeksGridProps
       
       // Check if this week has any events on the week start date
       let eventsForWeek = mergedEvents[weekDateStr]
+      let actualEventDate = weekDateStr // Default to week start
       
       // Also check each day within this week for events (like Gina's implementation)
       for (let day = 0; day < 7; day++) {
@@ -202,6 +217,7 @@ export function WeeksGrid({ isCompactMode, onToggleCompactMode }: WeeksGridProps
           }
           // Use the day's events instead of week events
           eventsForWeek = eventsForDay
+          actualEventDate = dayDateStr // Store the actual event date
           break // Use first day with events in this week
         }
       }
@@ -238,7 +254,13 @@ export function WeeksGrid({ isCompactMode, onToggleCompactMode }: WeeksGridProps
             type: 'event',
             label: eventLabel,
             date: weekDateStr,
-            tooltip: createTooltip(weekDateStr, allEventDescriptions),
+            tooltip: createTooltip(
+              weekDateStr, 
+              allEventDescriptions, 
+              actualEventDate, 
+              primaryEvent.eventType, 
+              APP_CONFIG.showPersonalEventDates
+            ),
             borderClass: 'btn',
             backgroundClass: 'custom-color', // We'll apply inline styles
             age: weekAge,

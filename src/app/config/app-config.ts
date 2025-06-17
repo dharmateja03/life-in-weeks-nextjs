@@ -27,6 +27,9 @@ export interface AppConfig {
   // Layout Settings
   defaultCompactMode: boolean       // Start in compact view (fits entire life on screen)
   
+  // Privacy Settings
+  showPersonalEventDates: boolean   // Show full dates for personal events (false = month/year only)
+  
   // Responsive Settings
   debounceResizeMs: number          // Debounce time for window resize events
 }
@@ -51,6 +54,9 @@ export const APP_CONFIG: AppConfig = {
   
   // Layout Settings
   defaultCompactMode: false,        // Start with standard view, user can toggle
+  
+  // Privacy Settings
+  showPersonalEventDates: false,    // Hide specific dates for personal events (month/year only)
   
   // Life Expectancy Settings
   showLifeExpectancy: true,         // Show life expectancy marker for perspective

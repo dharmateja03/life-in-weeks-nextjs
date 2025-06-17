@@ -5,7 +5,10 @@
       "Bash(yarn build)",
       "Bash(yarn lint)",
       "Bash(git add:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(grep:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(yarn typecheck)"
     ],
     "deny": []
   }

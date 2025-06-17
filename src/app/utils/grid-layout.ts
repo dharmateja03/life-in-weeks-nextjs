@@ -302,16 +302,25 @@ export function groupBoxesByDecade(boxes: GridBox[]): DecadeSection[] {
 }
 
 /**
- * Create tooltip text matching Gina's format
+ * Create tooltip text with support for event dates and privacy settings
  */
 export function createTooltip(
-  date: string, 
-  description?: string, 
+  weekStartDate: string,
+  description?: string,
+  eventDate?: string,
+  eventType?: 'personal' | 'world' | 'president',
+  showPersonalEventDates: boolean = true,
   doing?: string, 
   association?: string, 
   based?: string
 ): string {
-  const formattedDate = formatTooltipDate(date)
+  // Use event date if available and appropriate
+  const dateToShow = eventDate || weekStartDate
+  
+  // Determine if we should show full date based on event type and privacy setting
+  const showFullDate = eventType !== 'personal' || showPersonalEventDates
+  
+  const formattedDate = formatTooltipDateLocal(dateToShow, showFullDate)
   
   if (description) {
     return `${formattedDate} – ${description}`
@@ -337,15 +346,32 @@ export function createTooltip(
 }
 
 /**
+ * Parse date string (YYYY-MM-DD) without timezone issues
+ * Avoids UTC conversion that causes 1-day offset in some timezones
+ */
+function parseLocalDate(dateString: string): Date {
+  const [year, month, day] = dateString.split('-').map(Number)
+  return new Date(year, month - 1, day) // month is 0-indexed
+}
+
+/**
  * Format date for tooltip display (Jan 2, 2006 format)
  */
-export function formatTooltipDate(dateString: string): string {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric', 
-    year: 'numeric'
-  })
+function formatTooltipDateLocal(dateString: string, showFullDate: boolean = true): string {
+  const date = parseLocalDate(dateString)
+  
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  
+  const month = months[date.getMonth()]
+  const year = date.getFullYear()
+  
+  if (showFullDate) {
+    const day = date.getDate()
+    return `${month} ${day}, ${year}`
+  } else {
+    return `${month} ${year}`
+  }
 }
 
 /**
@@ -362,7 +388,7 @@ export function createBirthdayLabel(age: number, year: number, compactMode: bool
  * Create birthday tooltip matching Gina's format
  */
 export function createBirthdayTooltip(date: string, age: number): string {
-  const formattedDate = formatTooltipDate(date)
+  const formattedDate = formatTooltipDateLocal(date, true)
   const yearText = age === 1 ? "year" : "years"
   return `${formattedDate} – Turned ${age} ${yearText} old`
 }

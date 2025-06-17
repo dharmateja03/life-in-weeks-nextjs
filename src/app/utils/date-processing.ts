@@ -167,3 +167,44 @@ export function isWithinYear(date: Date, year: number, startMonth: number, start
   
   return date >= yearStart && date < yearEnd
 }
+
+/**
+ * Get the Sunday of the week containing the given date
+ * Ensures all weeks start on Sunday (day 0)
+ */
+export function getWeekStartSunday(date: Date): Date {
+  const weekStart = new Date(date)
+  const dayOfWeek = weekStart.getDay() // 0 = Sunday, 1 = Monday, etc.
+  weekStart.setDate(weekStart.getDate() - dayOfWeek)
+  return weekStart
+}
+
+/**
+ * Parse date string (YYYY-MM-DD) without timezone issues
+ * Avoids UTC conversion that causes 1-day offset in some timezones
+ */
+function parseLocalDate(dateString: string): Date {
+  const [year, month, day] = dateString.split('-').map(Number)
+  return new Date(year, month - 1, day) // month is 0-indexed
+}
+
+/**
+ * Format date for tooltip display based on privacy settings
+ * If showFullDate is false, returns only month/year (e.g., "Oct 1986")
+ */
+export function formatTooltipDate(dateString: string, showFullDate: boolean = true): string {
+  const date = parseLocalDate(dateString)
+  
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  
+  const month = months[date.getMonth()]
+  const year = date.getFullYear()
+  
+  if (showFullDate) {
+    const day = date.getDate()
+    return `${month} ${day}, ${year}`
+  } else {
+    return `${month} ${year}`
+  }
+}
