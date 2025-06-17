@@ -3,7 +3,7 @@
 // WeeksGrid Component - Main grid with exact row-breaking algorithm
 // Matches Gina's life-in-weeks.html logic exactly
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { lifeEvents, WEEKS_CONFIG } from '../data/life-events'
 import { worldEvents } from '../data/world-events'
 import { usPresidents } from '../data/us-presidents'
@@ -82,25 +82,47 @@ interface WeeksGridProps {
 }
 
 export function WeeksGrid({ isCompactMode, onToggleCompactMode }: WeeksGridProps) {
-  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
+  const [containerWidth, setContainerWidth] = useState<number>(0)
+  const gridContainerRef = useRef<HTMLDivElement>(null)
   
-  // Handle window resize for responsive row breaking with debouncing
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout
-    
-    const handleResize = () => {
-      clearTimeout(timeoutId)
-      timeoutId = setTimeout(() => {
-        setWindowWidth(window.innerWidth)
-      }, 150) // Debounce resize events
-    }
-    
-    window.addEventListener('resize', handleResize)
-    return () => {
-      window.removeEventListener('resize', handleResize)
-      clearTimeout(timeoutId)
+  // Measure actual container width
+  const measureContainer = useCallback(() => {
+    if (gridContainerRef.current) {
+      const rect = gridContainerRef.current.getBoundingClientRect()
+      const newWidth = rect.width
+      if (newWidth > 0) {
+        setContainerWidth(newWidth)
+      }
     }
   }, [])
+  
+  // Set up ResizeObserver for efficient container width monitoring
+  useEffect(() => {
+    if (!gridContainerRef.current) return
+    
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const newWidth = entry.contentRect.width
+        if (newWidth > 0) {
+          setContainerWidth(newWidth)
+        }
+      }
+    })
+    
+    resizeObserver.observe(gridContainerRef.current)
+    
+    // Initial measurement
+    measureContainer()
+    
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [measureContainer])
+  
+  // Also measure when compact mode changes
+  useEffect(() => {
+    measureContainer()
+  }, [isCompactMode, measureContainer])
   
   const startDate = new Date(WEEKS_CONFIG.startDate)
   const currentDate = new Date()
@@ -250,11 +272,7 @@ export function WeeksGrid({ isCompactMode, onToggleCompactMode }: WeeksGridProps
   // windowWidth state triggers re-render when screen size changes for responsive layout
   // const decadeSections = groupBoxesByDecade(allBoxes) // Unused for now
   
-  // Ensure component re-renders when window width changes
-  // This is used by the responsive grid constants in processBoxesIntoRows
-  React.useEffect(() => {
-    // windowWidth change triggers recalculation of responsive grid layout
-  }, [windowWidth])
+  // Container width changes automatically trigger re-renders through state
   
   // Create a map to store the color for each box based on milestone progression
   const boxColorMap = new Map<string, string>()
@@ -308,11 +326,14 @@ export function WeeksGrid({ isCompactMode, onToggleCompactMode }: WeeksGridProps
     boxColorMap.set(box.date, currentBoxColor)
   }
   
-  // Process all boxes together to get proper row numbering
-  const allRows = processBoxesIntoRows(allBoxes, isCompactMode)
+  // Process all boxes together to get proper row numbering with dynamic container width
+  const allRows = processBoxesIntoRows(allBoxes, isCompactMode, containerWidth > 0 ? containerWidth : undefined)
   
   return (
-    <div className={`weeks-grid-container ${isCompactMode ? 'compact-mode' : ''}`}>
+    <div 
+      ref={gridContainerRef}
+      className={`weeks-grid-container ${isCompactMode ? 'compact-mode' : ''}`}
+    >
       <CompactToggle 
         isCompact={isCompactMode} 
         onToggle={onToggleCompactMode} 

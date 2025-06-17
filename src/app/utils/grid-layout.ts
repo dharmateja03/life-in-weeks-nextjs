@@ -100,9 +100,31 @@ export const GRID_CONSTANTS = {
 }
 
 /**
- * Get appropriate constants based on current viewport width and compact mode
+ * Calculate dynamic grid constants based on actual measured container width
  */
-export function getResponsiveConstants(compactMode: boolean = false) {
+export function calculateDynamicConstants(containerWidth: number, compactMode: boolean = false) {
+  // Base constants that scale with container width
+  const baseConstants = {
+    containerWidth,
+    basePadding: compactMode ? 1 : Math.max(2, Math.floor(containerWidth / 200)), // Scale padding with width
+    charWidth: compactMode ? 6 : 8, // Character width estimation
+    weekBoxMinWidth: compactMode ? 8 : Math.max(15, Math.floor(containerWidth / 80)) // Scale min width
+  }
+  
+  return baseConstants
+}
+
+/**
+ * Get appropriate constants based on current viewport width and compact mode
+ * Now supports dynamic container width measurement
+ */
+export function getResponsiveConstants(compactMode: boolean = false, measuredWidth?: number) {
+  // If we have a measured width, use dynamic calculation
+  if (measuredWidth && measuredWidth > 0) {
+    return calculateDynamicConstants(measuredWidth, compactMode)
+  }
+  
+  // Fallback to static breakpoint system
   if (typeof window === 'undefined') {
     // Server-side rendering fallback
     return compactMode ? GRID_CONSTANTS.compact.desktop : GRID_CONSTANTS.desktop
@@ -137,8 +159,8 @@ export function getResponsiveConstants(compactMode: boolean = false) {
 /**
  * Calculate the absolute pixel width a text box will take up
  */
-export function calculateBoxWidth(label: string, compactMode: boolean = false): number {
-  const constants = getResponsiveConstants(compactMode)
+export function calculateBoxWidth(label: string, compactMode: boolean = false, measuredWidth?: number): number {
+  const constants = getResponsiveConstants(compactMode, measuredWidth)
   const labelLength = label.length
   
   // Calculate width as: padding + (characters * char width) + padding + border + gap
@@ -154,10 +176,10 @@ export function calculateBoxWidth(label: string, compactMode: boolean = false): 
  * Simple greedy row breaking using absolute pixel widths
  * Break when adding next box would exceed container width
  */
-function shouldBreakBeforeBox(currentRowWidth: number, nextBoxLabel: string, compactMode: boolean = false): boolean {
-  const constants = getResponsiveConstants(compactMode)
+function shouldBreakBeforeBox(currentRowWidth: number, nextBoxLabel: string, compactMode: boolean = false, measuredWidth?: number): boolean {
+  const constants = getResponsiveConstants(compactMode, measuredWidth)
   const nextBoxWidth = nextBoxLabel ? 
-    calculateBoxWidth(nextBoxLabel, compactMode) : 
+    calculateBoxWidth(nextBoxLabel, compactMode, measuredWidth) : 
     constants.weekBoxMinWidth + 2 + 1  // Add border + gap for week cells
   const totalAfterAdd = currentRowWidth + nextBoxWidth
   
@@ -168,9 +190,9 @@ function shouldBreakBeforeBox(currentRowWidth: number, nextBoxLabel: string, com
  * Determine if adding a new box would exceed the container width
  * Uses absolute pixel calculations
  */
-export function shouldBreakRow(currentWidth: number, newBoxLabel: string, compactMode: boolean = false): RowBreakCalculation {
-  const constants = getResponsiveConstants(compactMode)
-  const newBoxWidth = calculateBoxWidth(newBoxLabel, compactMode)
+export function shouldBreakRow(currentWidth: number, newBoxLabel: string, compactMode: boolean = false, measuredWidth?: number): RowBreakCalculation {
+  const constants = getResponsiveConstants(compactMode, measuredWidth)
+  const newBoxWidth = calculateBoxWidth(newBoxLabel, compactMode, measuredWidth)
   const totalAfterAdd = currentWidth + newBoxWidth
   
   return {
@@ -185,8 +207,8 @@ export function shouldBreakRow(currentWidth: number, newBoxLabel: string, compac
  * Process boxes into rows using absolute pixel width calculations
  * Break when adding next box would exceed container width
  */
-export function processBoxesIntoRows(boxes: GridBox[], compactMode: boolean = false): GridBox[][] {
-  const constants = getResponsiveConstants(compactMode)
+export function processBoxesIntoRows(boxes: GridBox[], compactMode: boolean = false, measuredWidth?: number): GridBox[][] {
+  const constants = getResponsiveConstants(compactMode, measuredWidth)
   const rows: GridBox[][] = []
   let currentRow: GridBox[] = []
   let currentRowWidth = 0
@@ -195,10 +217,10 @@ export function processBoxesIntoRows(boxes: GridBox[], compactMode: boolean = fa
     const box = boxes[i]
     const boxWidth = box.type === 'week' ? 
       constants.weekBoxMinWidth + 2 + 1 :  // Add border + gap for week cells
-      calculateBoxWidth(box.label, compactMode)
+      calculateBoxWidth(box.label, compactMode, measuredWidth)
     
     // Check if we need to break before adding this box
-    if (shouldBreakBeforeBox(currentRowWidth, box.label, compactMode) && currentRow.length > 0) {
+    if (shouldBreakBeforeBox(currentRowWidth, box.label, compactMode, measuredWidth) && currentRow.length > 0) {
       // Finish current row and start new one
       rows.push([...currentRow])
       currentRow = []
