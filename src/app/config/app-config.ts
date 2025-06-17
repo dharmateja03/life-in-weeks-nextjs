@@ -9,8 +9,7 @@ export interface AppConfig {
   defaultShowWorldEvents: boolean   // Show world events overlay by default
   defaultShowPresidents: boolean    // Show US presidents overlay by default
   
-  // Personal Timeline Settings
-  birthDate: string                 // User's birth date (YYYY-MM-DD)
+  // Personal Timeline Settings (birthDate will be provided by server-side config)
   name: string                      // User's display name
   website?: string                  // User's personal website
   
@@ -43,10 +42,7 @@ export const APP_CONFIG: AppConfig = {
   defaultShowWorldEvents: true,     // Show world events for historical context
   defaultShowPresidents: false,     // US presidents off by default (can be enabled if needed)
   
-  // Personal Timeline Settings (requires environment variables for sensitive dates)
-  birthDate: process.env.REAL_BIRTH_DATE || (() => {
-    throw new Error('REAL_BIRTH_DATE environment variable is required. Please check your .env.local file.')
-  })(),
+  // Personal Timeline Settings
   name: "Ran Ding",
   website: "https://dingran.me",
   
@@ -74,37 +70,56 @@ export const APP_CONFIG: AppConfig = {
   debounceResizeMs: 150,            // Smooth resize handling
 }
 
-// Derived configuration values
+// Derived configuration interface
+export interface DerivedConfig {
+  birthYear: number
+  birthMonth: string
+  birthDay: string
+  endYear: number
+  lifeExpectancyYear: number
+  japanLifeExpectancyYear: number
+  lifeExpectancyDate: string
+  japanLifeExpectancyDate: string
+  lifeExpectancyLabel: string
+  japanLifeExpectancyLabel: string
+  title: string
+  description: string
+}
+
+// Function to create derived configuration from birth date
+export function createDerivedConfig(birthDate: string): DerivedConfig {
+  const birthYear = parseInt(birthDate.split('-')[0])
+  const birthMonth = birthDate.split('-')[1]
+  const birthDay = birthDate.split('-')[2]
+  
+  return {
+    // Extract birth date components
+    birthYear,
+    birthMonth,
+    birthDay,
+    
+    // Calculate derived years
+    endYear: birthYear + APP_CONFIG.maxAge,
+    lifeExpectancyYear: birthYear + APP_CONFIG.lifeExpectancyAge,
+    japanLifeExpectancyYear: birthYear + APP_CONFIG.japanLifeExpectancyAge,
+    
+    // Calculate life expectancy dates
+    lifeExpectancyDate: `${birthYear + APP_CONFIG.lifeExpectancyAge}-${birthMonth}-${birthDay}`,
+    japanLifeExpectancyDate: `${birthYear + APP_CONFIG.japanLifeExpectancyAge}-${birthMonth}-${birthDay}`,
+    
+    // Generate life expectancy labels
+    lifeExpectancyLabel: `🇺🇸 US Male Life Expectancy (${APP_CONFIG.lifeExpectancyAge} years)`,
+    japanLifeExpectancyLabel: `🇯🇵 Japan Male Life Expectancy (${APP_CONFIG.japanLifeExpectancyAge} years)`,
+    
+    // App metadata
+    title: `${APP_CONFIG.name}'s Life in Weeks`,
+    description: `This is a map of ${APP_CONFIG.name}'s life, where each week I've been alive is a little box.`,
+  }
+}
+
+// Placeholder for static access (will be replaced by server-side config)
 export const DERIVED_CONFIG = {
-  // Extract birth year from date (calculated once)
-  birthYear: parseInt(APP_CONFIG.birthDate.split('-')[0]),
-  
-  // Extract birth date components
-  birthMonth: APP_CONFIG.birthDate.split('-')[1],
-  birthDay: APP_CONFIG.birthDate.split('-')[2],
-  
-  // Calculate derived years
-  get endYear() { return this.birthYear + APP_CONFIG.maxAge },
-  get lifeExpectancyYear() { return this.birthYear + APP_CONFIG.lifeExpectancyAge },
-  get japanLifeExpectancyYear() { return this.birthYear + APP_CONFIG.japanLifeExpectancyAge },
-  
-  // Calculate life expectancy dates
-  get lifeExpectancyDate() { 
-    return `${this.lifeExpectancyYear}-${this.birthMonth}-${this.birthDay}`
-  },
-  get japanLifeExpectancyDate() {
-    return `${this.japanLifeExpectancyYear}-${this.birthMonth}-${this.birthDay}`
-  },
-  
-  // Generate life expectancy labels
-  get lifeExpectancyLabel() {
-    return `🇺🇸 US Male Life Expectancy (${APP_CONFIG.lifeExpectancyAge} years)`
-  },
-  get japanLifeExpectancyLabel() {
-    return `🇯🇵 Japan Male Life Expectancy (${APP_CONFIG.japanLifeExpectancyAge} years)`
-  },
-  
-  // App metadata
-  title: `${APP_CONFIG.name}'s Life in Weeks`,
-  description: `This is a map of ${APP_CONFIG.name}'s life, where each week I've been alive is a little box.`,
+  endYear: 2071, // placeholder
+  lifeExpectancyLabel: `🇺🇸 US Male Life Expectancy (${APP_CONFIG.lifeExpectancyAge} years)`,
+  japanLifeExpectancyLabel: `🇯🇵 Japan Male Life Expectancy (${APP_CONFIG.japanLifeExpectancyAge} years)`,
 }

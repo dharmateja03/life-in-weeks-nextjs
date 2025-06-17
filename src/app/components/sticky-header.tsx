@@ -5,13 +5,15 @@
 
 import React, { useState, useEffect } from 'react'
 import { getDecadeMilestones } from '../utils/date-processing'
-import { WEEKS_CONFIG } from '../data/life-events'
+import { DerivedConfig } from '../config/app-config'
 
 interface StickyHeaderProps {
-  title: string
+  isCompactMode: boolean
+  setIsCompactMode: (compact: boolean) => void
+  derivedConfig: DerivedConfig
 }
 
-export function StickyHeader({ title }: StickyHeaderProps) {
+export function StickyHeader({ isCompactMode, setIsCompactMode, derivedConfig }: StickyHeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false)
   const [activeDecade, setActiveDecade] = useState('decade-0')
   
@@ -48,7 +50,7 @@ export function StickyHeader({ title }: StickyHeaderProps) {
             const yearMatch = tooltip.match(/(\w{3} \d{1,2}, (\d{4}))/)
             if (yearMatch) {
               const year = parseInt(yearMatch[2])
-              const age = year - parseInt(WEEKS_CONFIG.startYear.toString())
+              const age = year - derivedConfig.birthYear
               const decade = Math.floor(Math.max(0, age) / 10) * 10
               currentDecade = `decade-${decade}`
               break
@@ -62,9 +64,9 @@ export function StickyHeader({ title }: StickyHeaderProps) {
     
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  }, [derivedConfig.birthYear])
   
-  const decades = getDecadeMilestones(WEEKS_CONFIG.endYear, parseInt(WEEKS_CONFIG.startYear.toString()))
+  const decades = getDecadeMilestones(derivedConfig.endYear, derivedConfig.birthYear)
   
   return (
     <div 
@@ -74,8 +76,30 @@ export function StickyHeader({ title }: StickyHeaderProps) {
       }}
     >
       <h1 className={isScrolled ? 'tiny' : ''}>
-        {title}
+        My Life in Weeks
       </h1>
+      
+      {!isScrolled && (
+        <div className="mt-3">
+          <p>👋 Hi, I&apos;m <a href="https://dingran.me">Ran Ding</a>. Each week of my life is a little box.</p>
+          
+          <p>💡 Inspired by <a href="https://waitbutwhy.com/2014/05/life-weeks.html">Wait But Why</a>. Adapted from <a href="https://github.com/ginatrapani/life-in-weeks">Gina&apos;s work</a>.<br/>
+          💻 My code is <a href="https://github.com/dingran/life-in-weeks-nextjs">here</a>. Also <a href="https://www.coryzue.com/">Cory</a> built <a href="https://lifeweeks.app/">an app</a> for this.</p>
+        </div>
+      )}
+      
+      {!isScrolled && (
+        <div className="compact-toggle" style={{ textAlign: 'center', marginTop: '0.75rem', marginBottom: '0.5rem' }}>
+          <button
+            type="button"
+            onClick={() => setIsCompactMode(!isCompactMode)}
+            className={`toggle-button ${isCompactMode ? 'compact-active' : 'standard-active'}`}
+            title={isCompactMode ? 'Switch to Standard View' : 'Switch to Compact View (fits entire life on screen)'}
+          >
+            {isCompactMode ? '📋 Switch to Standard View' : '🔍 Switch to Compact View'}
+          </button>
+        </div>
+      )}
       
       <nav 
         className={`navbar ${isScrolled ? 'navbar-visible' : ''}`} 

@@ -4,7 +4,7 @@
 // Matches Gina's life-in-weeks.html logic exactly
 
 import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { lifeEvents, WEEKS_CONFIG } from '../data/life-events'
+import { EventsData, WeeksConfig } from '../data/life-events'
 import { worldEvents } from '../data/world-events'
 import { usPresidents } from '../data/us-presidents'
 import { APP_CONFIG } from '../config/app-config'
@@ -19,9 +19,8 @@ import {
   shouldShowInCompact
 } from '../utils/grid-layout'
 // Auto-generated milestone colors
-import { milestoneColors } from '../utils/milestone-colors'
+import { generateMilestoneColors } from '../utils/milestone-colors'
 import { WeekBox } from './week-box'
-import { CompactToggle } from './compact-toggle'
 
 // Extended event interface for merged events
 interface MergedEvent {
@@ -40,7 +39,7 @@ interface MergedEvent {
 }
 
 // Merge all event sources based on config
-function getMergedEvents() {
+function getMergedEvents(lifeEvents: EventsData) {
   const merged: Record<string, MergedEvent[]> = {}
   
   // Add personal events
@@ -78,10 +77,11 @@ function getMergedEvents() {
 
 interface WeeksGridProps {
   isCompactMode: boolean
-  onToggleCompactMode: (compact: boolean) => void
+  lifeEvents: EventsData
+  weeksConfig: WeeksConfig
 }
 
-export function WeeksGrid({ isCompactMode, onToggleCompactMode }: WeeksGridProps) {
+export function WeeksGrid({ isCompactMode, lifeEvents, weeksConfig }: WeeksGridProps) {
   const [containerWidth, setContainerWidth] = useState<number>(0)
   const gridContainerRef = useRef<HTMLDivElement>(null)
   
@@ -124,11 +124,14 @@ export function WeeksGrid({ isCompactMode, onToggleCompactMode }: WeeksGridProps
     measureContainer()
   }, [isCompactMode, measureContainer])
   
-  const startDate = new Date(WEEKS_CONFIG.startDate)
+  const startDate = new Date(weeksConfig.startDate)
   const currentDate = new Date()
   
+  // Generate milestone colors from the life events
+  const milestoneColors = generateMilestoneColors(lifeEvents)
+  
   // Get merged events from all sources
-  const mergedEvents = getMergedEvents()
+  const mergedEvents = getMergedEvents(lifeEvents)
   
   // Initialize milestone tracking
   const milestoneWeeks = new Set<string>()  // Track weeks with milestone events
@@ -139,8 +142,8 @@ export function WeeksGrid({ isCompactMode, onToggleCompactMode }: WeeksGridProps
   const allBoxes: GridBox[] = []
   
   // Process each year from start to end
-  for (let year = parseInt(WEEKS_CONFIG.startYear.toString()); year <= WEEKS_CONFIG.endYear; year++) {
-    const age = year - parseInt(WEEKS_CONFIG.startYear.toString())
+  for (let year = weeksConfig.startYear; year <= weeksConfig.endYear; year++) {
+    const age = year - weeksConfig.startYear
     
     // Add birthday box if not the birth year
     if (age > 0) {
@@ -356,10 +359,6 @@ export function WeeksGrid({ isCompactMode, onToggleCompactMode }: WeeksGridProps
       ref={gridContainerRef}
       className={`weeks-grid-container ${isCompactMode ? 'compact-mode' : ''}`}
     >
-      <CompactToggle 
-        isCompact={isCompactMode} 
-        onToggle={onToggleCompactMode} 
-      />
       {allRows.map((row, globalRowIndex) => (
         <div key={`row-${globalRowIndex}`} className="row-wrapper">
           {row.map((box, boxIndex) => {

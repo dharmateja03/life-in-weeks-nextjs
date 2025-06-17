@@ -1,13 +1,13 @@
 // Life Events Data - Personal Life Timeline (with privacy protection for sensitive dates)
 
-import { APP_CONFIG, DERIVED_CONFIG } from '../config/app-config'
+import { APP_CONFIG } from '../config/app-config'
 
-// Get date from environment variable - required for sensitive dates
-function getRequiredDate(envVar: string): string {
-  if (typeof process !== 'undefined' && process.env && process.env[envVar]) {
-    return process.env[envVar]!
-  }
-  throw new Error(`Environment variable ${envVar} is required for sensitive dates. Please check your .env.local file.`)
+// Sensitive dates interface - these will be provided by server-side configuration
+export interface SensitiveDates {
+  birthDate: string
+  metWifeDate: string  
+  marriageDate: string
+  citizenshipDate: string
 }
 
 /**
@@ -34,12 +34,23 @@ export interface LifeEvent {
 
 export type EventsData = Record<string, LifeEvent[]>
 
-export const lifeEvents: EventsData = {
-  [getRequiredDate("REAL_BIRTH_DATE")]: [
-    {
-      headline: "🐣 Born"
-    }
-  ],
+// Weeks configuration interface  
+export interface WeeksConfig {
+  startDate: string
+  endYear: number
+  startYear: number
+  startMonth: string
+  startDay: string
+}
+
+// Function to create life events with sensitive dates and derived config
+export function createLifeEvents(sensitiveDates: SensitiveDates, derivedConfig: { lifeExpectancyDate: string; japanLifeExpectancyDate: string; lifeExpectancyLabel: string; japanLifeExpectancyLabel: string }): EventsData {
+  return {
+    [sensitiveDates.birthDate]: [
+      {
+        headline: "🐣 Born"
+      }
+    ],
   "1993-09-01": [
     {
       headline: "📓 Elementary School",
@@ -68,11 +79,11 @@ export const lifeEvents: EventsData = {
       description: "Did Physics Olympiad instead of SATs. Went to Nanjing University, but they enrolled me in the wrong major—I stuck with it anyway ¯\\_(ツ)_/¯"
     }
   ],
-  [getRequiredDate("REAL_MET_WIFE_DATE")]: [
-    {
-      headline: "💕 Met My Future Wife"
-    }
-  ],
+    [sensitiveDates.metWifeDate]: [
+      {
+        headline: "💕 Met My Future Wife"
+      }
+    ],
   "2007-10-07": [
     {
       headline: "🎻 Performing in Leipzig",
@@ -91,11 +102,11 @@ export const lifeEvents: EventsData = {
       description: "CityU in Hong Kong, an eye-opening experience compared to my school (Nanjing University)."
     }
   ],
-  [getRequiredDate("REAL_MARRIAGE_DATE")]: [
-    {
-      headline: "💍 Married"
-    }
-  ],
+    [sensitiveDates.marriageDate]: [
+      {
+        headline: "💍 Married"
+      }
+    ],
   "2009-06-20": [
     {
       headline: "✈️ US Grad School",
@@ -214,12 +225,12 @@ export const lifeEvents: EventsData = {
       description: "Utah national parks hiking adventure: https://www.dingran.me/blog/utah-trip"
     }
   ],
-  [getRequiredDate("REAL_CITIZENSHIP_DATE")]: [
-    {
-      headline: "🇺🇸 Became a US citizen",
-      description: "Became a US citizen, mostly for the ability to travel abroad without needing visas."
-    }
-  ],
+    [sensitiveDates.citizenshipDate]: [
+      {
+        headline: "🇺🇸 Became a US citizen",
+        description: "Became a US citizen, mostly for the ability to travel abroad without needing visas."
+      }
+    ],
   "2021-10-01": [
     {
       headline: "🇮🇹 Italy",
@@ -315,31 +326,35 @@ export const lifeEvents: EventsData = {
       description: "Built this little site, with the help of AI of course."
     }
   ],
-  ...(APP_CONFIG.showLifeExpectancy ? {
-    [DERIVED_CONFIG.lifeExpectancyDate]: [
-      {
-        headline: DERIVED_CONFIG.lifeExpectancyLabel,
-        description: `Based on US male life expectancy data from Worldometers`,
-        milestone: true  // Mark as milestone to show it's a significant marker
-      }
-    ]
-  } : {}),
-  ...(APP_CONFIG.showJapanLifeExpectancy ? {
-    [DERIVED_CONFIG.japanLifeExpectancyDate]: [
-      {
-        headline: DERIVED_CONFIG.japanLifeExpectancyLabel,
-        description: `Japan has one of the highest life expectancies globally`,
-        milestone: true  // Mark as milestone for comparison
-      }
-    ]
-  } : {})
+    ...(APP_CONFIG.showLifeExpectancy ? {
+      [derivedConfig.lifeExpectancyDate]: [
+        {
+          headline: derivedConfig.lifeExpectancyLabel,
+          description: `Based on US male life expectancy data from Worldometers`,
+          milestone: true  // Mark as milestone to show it's a significant marker
+        }
+      ]
+    } : {}),
+    ...(APP_CONFIG.showJapanLifeExpectancy ? {
+      [derivedConfig.japanLifeExpectancyDate]: [
+        {
+          headline: derivedConfig.japanLifeExpectancyLabel,
+          description: `Japan has one of the highest life expectancies globally`,
+          milestone: true  // Mark as milestone for comparison
+        }
+      ]
+    } : {})
+  }
 }
 
-// Configuration constants - now derived from central config
-export const WEEKS_CONFIG = {
-  startDate: APP_CONFIG.birthDate,
-  endYear: DERIVED_CONFIG.endYear,
-  startYear: DERIVED_CONFIG.birthYear,
-  startMonth: DERIVED_CONFIG.birthMonth,
-  startDay: DERIVED_CONFIG.birthDay
+// Function to create weeks config with sensitive birth date
+export function createWeeksConfig(birthDate: string, derivedConfig: { endYear: number }): WeeksConfig {
+  return {
+    startDate: birthDate,
+    endYear: derivedConfig.endYear,
+    startYear: parseInt(birthDate.split('-')[0]),
+    startMonth: birthDate.split('-')[1],
+    startDay: birthDate.split('-')[2]
+  }
 }
+

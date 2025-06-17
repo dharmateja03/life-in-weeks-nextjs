@@ -1,7 +1,7 @@
 // Automatic Milestone Color Generation
 // Generates colors based on actual milestone events in the data
 
-import { lifeEvents } from '../data/life-events'
+import { EventsData } from '../data/life-events'
 
 // Base color palette - can be extended as needed
 const COLOR_PALETTE = [
@@ -45,7 +45,7 @@ function getColorAtIndex(index: number): string {
 }
 
 // Auto-detect milestone events from life events data
-export function detectMilestoneEvents() {
+export function detectMilestoneEvents(lifeEvents: EventsData) {
   const milestoneEvents = Object.entries(lifeEvents)
     .filter(([, events]) => events.some(event => event.milestone))
     .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
@@ -58,8 +58,8 @@ export function detectMilestoneEvents() {
 }
 
 // Generate milestone colors automatically based on detected events
-export function generateMilestoneColors(): string[] {
-  const milestoneEvents = detectMilestoneEvents()
+export function generateMilestoneColors(lifeEvents: EventsData): string[] {
+  const milestoneEvents = detectMilestoneEvents(lifeEvents)
   
   // Generate colors for each milestone
   const colors = milestoneEvents.map((_, index) => getColorAtIndex(index))
@@ -71,6 +71,3 @@ export function generateMilestoneColors(): string[] {
   
   return colors
 }
-
-// Export the automatically generated colors
-export const milestoneColors = generateMilestoneColors()

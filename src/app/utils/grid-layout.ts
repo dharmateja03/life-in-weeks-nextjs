@@ -103,14 +103,28 @@ export const GRID_CONSTANTS = {
  * Calculate dynamic grid constants based on actual measured container width
  */
 export function calculateDynamicConstants(containerWidth: number, compactMode: boolean = false) {
-  // Calculate character width based on container width
-  // This scales from 5px (small mobile) to 8px (desktop) based on container size
+  // Calculate character width based on actual CSS font sizes
   let charWidth: number
+  let basePadding: number
+  let weekBoxMinWidth: number
+  
   if (compactMode) {
-    // Compact mode uses smaller, more consistent character widths
-    charWidth = containerWidth < 400 ? 5 : 6
+    // Compact mode: match CSS font-size constraints
+    if (containerWidth <= 480) {
+      charWidth = 7   // CSS: font-size: 7px
+      basePadding = 2 // CSS: padding: 0px 2px = 4px total
+      weekBoxMinWidth = 14 // CSS: 8px min-width + 4px padding + 2px borders
+    } else if (containerWidth <= 768) {
+      charWidth = 8   // CSS: font-size: 8px
+      basePadding = 2 // CSS: padding: 0px 2px = 4px total
+      weekBoxMinWidth = 14 // CSS: 8px min-width + 4px padding + 2px borders
+    } else {
+      charWidth = 10  // CSS: font-size: 12px (desktop compact)
+      basePadding = 2 // CSS: padding: 0px 2px = 4px total
+      weekBoxMinWidth = 16 // Slightly larger for desktop
+    }
   } else {
-    // Normal mode scales character width with container/font size
+    // Normal mode: existing logic (working fine)
     if (containerWidth < 350) {
       charWidth = 5  // Extra small mobile
     } else if (containerWidth < 500) {
@@ -120,18 +134,15 @@ export function calculateDynamicConstants(containerWidth: number, compactMode: b
     } else {
       charWidth = 8  // Desktop and larger
     }
+    basePadding = Math.max(2, Math.min(8, Math.floor(containerWidth / 150)))
+    weekBoxMinWidth = Math.max(12, Math.min(20, Math.floor(containerWidth / 50)))
   }
   
-  // Scale padding more appropriately for different screen sizes
-  const basePadding = compactMode ? 1 : Math.max(2, Math.min(8, Math.floor(containerWidth / 150)))
-  
-  // Scale minimum week box width
-  const weekBoxMinWidth = compactMode ? 
-    Math.max(4, Math.floor(containerWidth / 100)) : 
-    Math.max(12, Math.min(20, Math.floor(containerWidth / 50)))
+  // Apply safety margin: use 95% of container width to prevent edge-case overflow
+  const safeContainerWidth = Math.floor(containerWidth * 0.95)
   
   const baseConstants = {
-    containerWidth,
+    containerWidth: safeContainerWidth, // Use safety margin
     basePadding,
     charWidth,
     weekBoxMinWidth
@@ -183,6 +194,26 @@ export function getResponsiveConstants(compactMode: boolean = false, measuredWid
 }
 
 /**
+ * Calculate the absolute pixel width for empty week cells
+ */
+export function calculateWeekCellWidth(compactMode: boolean = false): number {
+  const borderWidth = 2  // 1px border on each side
+  const gapWidth = 1     // 1px gap between cells
+  
+  if (compactMode) {
+    // Compact mode: squeeze empty cells to 9px total
+    // 4px content + 2px padding + 2px borders + 1px gap = 9px
+    return 4 + 2 + borderWidth + gapWidth  // Ultra-compressed empty cells
+  } else {
+    // Normal mode: square cells (width = total CSS height)
+    // Use viewport width, not container width, to match CSS media queries
+    const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1200
+    // Mobile (≤768px viewport): 18px total, Desktop/Tablet (>768px): 26px total
+    return viewportWidth <= 768 ? 18 : 26
+  }
+}
+
+/**
  * Calculate the absolute pixel width a text box will take up
  */
 export function calculateBoxWidth(label: string, compactMode: boolean = false, measuredWidth?: number): number {
@@ -206,7 +237,7 @@ function shouldBreakBeforeBox(currentRowWidth: number, nextBoxLabel: string, com
   const constants = getResponsiveConstants(compactMode, measuredWidth)
   const nextBoxWidth = nextBoxLabel ? 
     calculateBoxWidth(nextBoxLabel, compactMode, measuredWidth) : 
-    constants.weekBoxMinWidth + 2 + 1  // Add border + gap for week cells
+    calculateWeekCellWidth(compactMode)  // Use new week cell width function
   const totalAfterAdd = currentRowWidth + nextBoxWidth
   
   return totalAfterAdd >= constants.containerWidth
@@ -234,7 +265,6 @@ export function shouldBreakRow(currentWidth: number, newBoxLabel: string, compac
  * Break when adding next box would exceed container width
  */
 export function processBoxesIntoRows(boxes: GridBox[], compactMode: boolean = false, measuredWidth?: number): GridBox[][] {
-  const constants = getResponsiveConstants(compactMode, measuredWidth)
   const rows: GridBox[][] = []
   let currentRow: GridBox[] = []
   let currentRowWidth = 0
@@ -242,11 +272,13 @@ export function processBoxesIntoRows(boxes: GridBox[], compactMode: boolean = fa
   for (let i = 0; i < boxes.length; i++) {
     const box = boxes[i]
     const boxWidth = box.type === 'week' ? 
-      constants.weekBoxMinWidth + 2 + 1 :  // Add border + gap for week cells
+      calculateWeekCellWidth(compactMode) :  // Use new week cell width function
       calculateBoxWidth(box.label, compactMode, measuredWidth)
     
-    // Check if we need to break before adding this box
-    if (shouldBreakBeforeBox(currentRowWidth, box.label, compactMode, measuredWidth) && currentRow.length > 0) {
+    // Check if we need to break before adding this box (width-based only)
+    const shouldBreakWidth = shouldBreakBeforeBox(currentRowWidth, box.label, compactMode, measuredWidth)
+    
+    if (shouldBreakWidth && currentRow.length > 0) {
       // Finish current row and start new one
       rows.push([...currentRow])
       currentRow = []

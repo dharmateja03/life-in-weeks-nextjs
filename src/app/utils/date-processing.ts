@@ -1,7 +1,7 @@
 // Date Processing Utilities for Life in Weeks
 // Handles date calculations, week generation, and timeline processing
 
-import { WEEKS_CONFIG } from '../data/life-events'
+// No longer importing WEEKS_CONFIG - functions now accept parameters
 
 export interface WeekData {
   date: Date
@@ -23,6 +23,10 @@ export function generateWeeklyData(startDateStr: string, endYear: number): WeekD
   const currentDate = new Date()
   const weeks: WeekData[] = []
   
+  // Extract birth month and day for week calculations
+  const birthMonth = (startDate.getMonth() + 1).toString()
+  const birthDay = startDate.getDate().toString()
+  
   // Start from the birth date
   const currentWeek = new Date(startDate)
   
@@ -30,7 +34,7 @@ export function generateWeeklyData(startDateStr: string, endYear: number): WeekD
     const weekData: WeekData = {
       date: new Date(currentWeek),
       dateString: formatDateString(currentWeek),
-      week: getWeekOfYear(currentWeek),
+      week: getWeekOfYear(currentWeek, birthMonth, birthDay),
       year: currentWeek.getFullYear(),
       age: getAge(currentWeek, startDate),
       isCurrentWeek: isSameWeek(currentWeek, currentDate),
@@ -58,8 +62,8 @@ export function formatDateString(date: Date): string {
  * Get week number within the year (0-52)
  * Matches Hugo's week calculation logic
  */
-export function getWeekOfYear(date: Date): number {
-  const yearStart = new Date(date.getFullYear(), parseInt(WEEKS_CONFIG.startMonth) - 1, parseInt(WEEKS_CONFIG.startDay))
+export function getWeekOfYear(date: Date, birthMonth: string, birthDay: string): number {
+  const yearStart = new Date(date.getFullYear(), parseInt(birthMonth) - 1, parseInt(birthDay))
   const diffTime = date.getTime() - yearStart.getTime()
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
   return Math.floor(diffDays / 7)
