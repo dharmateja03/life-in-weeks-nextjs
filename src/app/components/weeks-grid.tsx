@@ -3,7 +3,7 @@
 // WeeksGrid Component - Main grid with exact row-breaking algorithm
 // Matches Gina's life-in-weeks.html logic exactly
 
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef, useCallback, forwardRef } from 'react'
 import { EventsData, WeeksConfig } from '../data/life-events'
 import { worldEvents } from '../data/world-events'
 import { usPresidents } from '../data/us-presidents'
@@ -81,7 +81,8 @@ interface WeeksGridProps {
   weeksConfig: WeeksConfig
 }
 
-export function WeeksGrid({ isCompactMode, lifeEvents, weeksConfig }: WeeksGridProps) {
+export const WeeksGrid = forwardRef<HTMLDivElement, WeeksGridProps>(
+  function WeeksGrid({ isCompactMode, lifeEvents, weeksConfig }, ref) {
   const [containerWidth, setContainerWidth] = useState<number>(0)
   const gridContainerRef = useRef<HTMLDivElement>(null)
   
@@ -356,7 +357,16 @@ export function WeeksGrid({ isCompactMode, lifeEvents, weeksConfig }: WeeksGridP
   
   return (
     <div 
-      ref={gridContainerRef}
+      ref={(el) => {
+        gridContainerRef.current = el
+        if (ref) {
+          if (typeof ref === 'function') {
+            ref(el)
+          } else {
+            ref.current = el
+          }
+        }
+      }}
       className={`weeks-grid-container ${isCompactMode ? 'compact-mode' : ''}`}
     >
       {allRows.map((row, globalRowIndex) => (
@@ -385,4 +395,4 @@ export function WeeksGrid({ isCompactMode, lifeEvents, weeksConfig }: WeeksGridP
       ))}
     </div>
   )
-}
+})

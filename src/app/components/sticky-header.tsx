@@ -3,24 +3,60 @@
 // StickyHeader Component - Header with decade navigation
 // Matches Gina's header/navbar.html and sticky behavior
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, RefObject } from 'react'
 import { getDecadeMilestones } from '../utils/date-processing'
 import { DerivedConfig } from '../config/app-config'
 
 interface StickyHeaderProps {
-  isCompactMode: boolean
-  setIsCompactMode: (compact: boolean) => void
   derivedConfig: DerivedConfig
+  gridRef: RefObject<HTMLDivElement | null>
 }
 
-export function StickyHeader({ isCompactMode, setIsCompactMode, derivedConfig }: StickyHeaderProps) {
-  const [isScrolled, setIsScrolled] = useState(false)
+export function StickyHeader({ derivedConfig, gridRef }: StickyHeaderProps) {
+  const [isTitleSmall, setIsTitleSmall] = useState(false)
+  const [isNavbarVisible, setIsNavbarVisible] = useState(false)
   const [activeDecade, setActiveDecade] = useState('decade-0')
+  const [navbarThreshold, setNavbarThreshold] = useState(150) // Fallback
+  const titleRef = useRef<HTMLHeadingElement>(null)
+  
+  // Calculate the threshold for navbar appearance
+  useEffect(() => {
+    const calculateThreshold = () => {
+      if (gridRef.current && titleRef.current) {
+        // Get the distance from top of page to grid
+        const gridRect = gridRef.current.getBoundingClientRect()
+        const gridTopFromPageTop = gridRect.top + window.scrollY
+        
+        // Get title height (when small)
+        const titleHeight = titleRef.current.offsetHeight
+        
+        // Threshold is when grid reaches bottom of title
+        // We need to account for sticky positioning
+        const threshold = gridTopFromPageTop - titleHeight - 10 // 10px buffer
+        
+        setNavbarThreshold(Math.max(50, threshold)) // Min 50px
+      }
+    }
+    
+    // Calculate on mount and when layout changes
+    const timer = setTimeout(calculateThreshold, 100) // Small delay for layout
+    window.addEventListener('resize', calculateThreshold)
+    
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('resize', calculateThreshold)
+    }
+  }, [gridRef, isTitleSmall])
   
   useEffect(() => {
     const handleScroll = () => {
-      // Show navigation when user scrolls down more than 200px
-      setIsScrolled(window.scrollY > 200)
+      const scrollY = window.scrollY
+      
+      // Title shrinks immediately on any scroll (like Gina's)
+      setIsTitleSmall(scrollY > 0)
+      
+      // Navbar appears when grid reaches bottom of title
+      setIsNavbarVisible(scrollY > navbarThreshold)
       
       // Find which decade should be active based on visible boxes
       const weekBoxes = document.querySelectorAll('.week, .birthday, .event')
@@ -30,7 +66,7 @@ export function StickyHeader({ isCompactMode, setIsCompactMode, derivedConfig }:
       for (const box of weekBoxes) {
         const rect = box.getBoundingClientRect()
         // Check if box is in the upper portion of viewport (within header area)
-        if (rect.top <= 200 && rect.bottom >= 100) {
+        if (rect.top <= 150 && rect.bottom >= 50) {
           // Try to get age from the box data or nearby elements
           const boxElement = box as HTMLElement
           const tooltip = boxElement.getAttribute('data-bs-title') || boxElement.title
@@ -62,9 +98,9 @@ export function StickyHeader({ isCompactMode, setIsCompactMode, derivedConfig }:
       setActiveDecade(currentDecade)
     }
     
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [derivedConfig.birthYear])
+  }, [derivedConfig.birthYear, navbarThreshold])
   
   const decades = getDecadeMilestones(derivedConfig.endYear, derivedConfig.birthYear)
   
@@ -75,38 +111,16 @@ export function StickyHeader({ isCompactMode, setIsCompactMode, derivedConfig }:
         backgroundColor: 'var(--main-bg-color)'
       }}
     >
-      <h1 className={isScrolled ? 'tiny' : ''}>
+      <h1 ref={titleRef} className={isTitleSmall ? 'tiny' : ''}>
         My Life in Weeks
       </h1>
       
-      {!isScrolled && (
-        <div className="mt-3">
-          <p>👋 Hi, I&apos;m <a href="https://dingran.me">Ran Ding</a>. Each week of my life is a little box.</p>
-          
-          <p>💡 Inspired by <a href="https://waitbutwhy.com/2014/05/life-weeks.html">Wait But Why</a>. Adapted from <a href="https://github.com/ginatrapani/life-in-weeks">Gina&apos;s work</a>.<br/>
-          💻 My code is <a href="https://github.com/dingran/life-in-weeks-nextjs">here</a>. Also <a href="https://www.coryzue.com/">Cory</a> built <a href="https://lifeweeks.app/">an app</a> for this.</p>
-        </div>
-      )}
-      
-      {!isScrolled && (
-        <div className="compact-toggle" style={{ textAlign: 'center', marginTop: '0.75rem', marginBottom: '0.5rem' }}>
-          <button
-            type="button"
-            onClick={() => setIsCompactMode(!isCompactMode)}
-            className={`toggle-button ${isCompactMode ? 'compact-active' : 'standard-active'}`}
-            title={isCompactMode ? 'Switch to Standard View' : 'Switch to Compact View (fits entire life on screen)'}
-          >
-            {isCompactMode ? '📋 Switch to Standard View' : '🔍 Switch to Compact View'}
-          </button>
-        </div>
-      )}
-      
       <nav 
-        className={`navbar ${isScrolled ? 'navbar-visible' : ''}`} 
+        className={`navbar ${isNavbarVisible ? 'navbar-visible' : ''}`} 
         id="lifeinweeks-navbar"
         style={{
-          display: isScrolled ? 'block' : 'none',
-          opacity: isScrolled ? 1 : 0,
+          display: isNavbarVisible ? 'block' : 'none',
+          opacity: isNavbarVisible ? 1 : 0,
           transition: 'opacity 0.3s ease-in-out'
         }}
       >
