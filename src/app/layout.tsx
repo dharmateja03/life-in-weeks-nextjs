@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "Life in Weeks",
@@ -32,6 +33,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         {children}
+        <Analytics />
       </body>
     </html>
   );
