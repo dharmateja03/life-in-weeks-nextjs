@@ -5,6 +5,7 @@ import { StickyHeader } from './sticky-header'
 import { IntroContent } from './intro-content'
 import { WeeksGrid } from './weeks-grid'
 import { Footer } from './footer'
+import { CountdownTimer } from './countdown-timer'
 import { APP_CONFIG, DerivedConfig } from '../config/app-config'
 import { EventsData, WeeksConfig } from '../data/life-events'
 
@@ -31,6 +32,12 @@ export function LifeWeeksClient({ lifeEvents, weeksConfig, derivedConfig }: Life
 
   return (
     <div className="life-in-weeks-container">
+      {/* Countdown Timer */}
+      <CountdownTimer 
+        birthDate={weeksConfig.startDate}
+        lifeExpectancyAge={APP_CONFIG.lifeExpectancyAge}
+      />
+      
       <div className="life-in-weeks">
         <StickyHeader 
           derivedConfig={derivedConfig}

@@ -448,3 +448,59 @@ html, body {
 .compact-cell.event {
   font-size: 10px !important;
 }
+
+/* Countdown Timer Styles */
+.countdown-timer {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1001;
+  pointer-events: none;
+}
+
+.timer-container {
+  pointer-events: auto;
+  cursor: default;
+}
+
+.timer-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15) !important;
+  transition: all 0.3s ease;
+}
+
+.pulse-animation {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Mobile Responsive for Timer */
+@media (max-width: 768px) {
+  .countdown-timer {
+    top: 10px;
+    right: 10px;
+  }
+  
+  .timer-container {
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+  }
+  
+  .years-number {
+    font-size: 16px !important;
+  }
+  
+  .years-label {
+    font-size: 10px !important;
+  }
+}
+
+/* Ensure proper spacing when both components are present */
+.countdown-timer + .dark-mode-toggle,
+.dark-mode-toggle + .countdown-timer {
+  margin-top: 60px;
+}
